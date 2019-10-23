@@ -1,0 +1,2 @@
+# representacion del conocimiento
+ 
