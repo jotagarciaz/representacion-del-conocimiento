@@ -1,0 +1,148 @@
+* Primera pregunta
+
+
+Para programar el comportamiento de un robot ROMBLA™ (a partir de ahora se
+llamara el robot), se ha decidido modelar una habitación  
+como una cuadrícula de tres por tres. Dentro de la habitación, hay un
+montón de basura y la papelera. El robot puede realizar tres
+acciones:
+- ir de una posición de la habitación a otra;
+
+- recoger basura, si el robot está en las mismas coordenadas que la cuadrícula;
+
+- soltar basura si esta en las mismas coordenadas que la papelera.
+
+Se da el siguiente código prolog, ¿por que no funciona? Corregir el
+código y comentar las razones por las que no funcionaba (pista:
+utilizar la función «trace»).
+
+  #+NAME: goal-test
+  #+BEGIN_SRC prolog 
+
+% El estado se compone de tres posiciones, la posicion del robot, de la papelera y la basura.
+estado(cuadricula(1,1),cuadricula(1,2), cuadricula(1,3)).
+
+% El robot puede moverse entre las distintas posiciones.
+accion(estado(Pos1,Pos2, Pos3), ir(Pos1,Pos4), estado(Pos4, Pos2, Pos3)).
+% El robot  puede recoger la basura si esta encima de ella.
+accion(estado(Pos1,Pos2, Pos3), recoger, estado(Pos1, Pos2, cargada)).
+% El robot  puede soltar la basura si esta cargada y estamos al lado de la papelera.
+accion(estado(Pos1,Pos1, cargada), soltar, estado(Pos1, Pos1, en_papelera)).
+
+%% Los planes empiezan en un estado y acaban en otro.
+
+plan(Estado, Estado, []).
+plan(Inicio,  Fin, [Accion1|Resto]) :-
+    accion(Inicio, Accion1, Estado), plan(Estado,Fin,Resto).
+
+%% :-plan(estado(cuadricula(1,1),cuadricula(1,2),cuadricula(1,3)),estado(_,_,en_papelera),Plan) ,write(Plan).
+  #+END_SRC
+
+Suponed que la cuadricula es de cinco por cinco, donde las coordenadas
+son números enteros entre 1 y 5. Hacer que el
+resultado sea los pasos que tiene que ir dando el robot para llegar a
+cada posición de la cuadrícula. Suponer que el robot solamente avanza
+de casilla en casilla, y se puede mover de la casilla cuadricula(x,y)
+a cuadricula(x+1,y),  cuadricula(x-1,y), cuadricula(x,y+1),
+cuadricula(x,y-1).
+
+* Segunda Pregunta
+
+
+Se quiere realizar un viaje en autobús en Cantabria. 
+Se dispone del siguiente horario:
+#+BEGIN_SRC prolog
+:- op( 100, xfx, salida).
+:- op( 50, xfx,:).
+% Horario entre las siguientes localidades cantabras.
+horario( [ santander salida 8:00, guarnizo salida 8:35, solares salida 8:55 ]).
+% Empezamos en Santander salida 8:00, llegamos a  guarnizo salida 8:35, seguimos a  solares, salida 8:55
+horario( [ santander salida 9:10, lierganes salida 9:25, guarnizo salida 9:55, solares salida 10:15 ]).
+horario( [ santander salida 9:45, lierganes salida 10:00, guarnizo salida 10:30, solares salida 10:50 ]).
+horario( [ santander salida 11:45, lierganes salida 12:00, guarnizo salida 12:30, solares salida 12:50 ]).
+horario( [ santander salida 13:10, guarnizo salida 13:32, solares salida 13:45 ]).
+horario( [ santander salida 14:05, guarnizo salida 14:40, solares salida 15:00 ]).
+horario( [ santander salida 15:00, guarnizo salida 15:36, solares salida 15:57, beranga salida 16:13 ]).
+horario( [ santander salida 16:20, lierganes salida 16:35, guarnizo salida 17:05, solares salida 17:25 ]).
+horario( [ santander salida 18:05, lierganes salida 18:20, guarnizo salida 18:50, solares salida 19:10 ]).
+horario( [ solares salida 9:00, guarnizo salida 9:20, lierganes salida 9:50, santander salida 10:05 ]).
+horario( [ solares salida 10:25, guarnizo salida 10:50, lierganes salida 11:20, santander salida 11:35 ]).
+horario( [ solares salida 11:25, guarnizo salida 11:45, santander salida 12:20 ]).
+horario( [ beranga salida 12:55, solares salida 13:12, guarnizo salida 13:34, santander salida 14:10 ]).
+horario( [ solares salida 13:45, guarnizo salida 13:59, santander salida 14:20 ]).
+horario( [ solares salida 15:05, guarnizo salida 15:25, santander salida 16:00 ]).
+horario( [ solares salida 16:30, guarnizo salida 16:50, lierganes salida 17:20, santander salida 17:35 ]).
+horario( [ solares salida 18:15, guarnizo salida 18:35, lierganes salida 19:05, santander salida 19:20 ]).
+horario( [ solares salida 19:15, guarnizo salida 19:35, lierganes salida 20:05, santander salida 20:20 ]).
+% horario( StartPLace salida StartTime, EndPlace salida EndTime, Horario)
+plan( Inicio,  Destino, [ salida(Inicio), llegada( Siguiente) | Resto]) :-
+    list( Resto), 
+    transbordo( Inicio, Siguiente),
+    resto_horario(Siguiente ,Destino, Resto).
+
+resto_horario( Sitio, Sitio, []).
+
+resto_horario( Ahora, Destino, [ llegada( Siguiente) | Resto]) :-
+    transbordo( Ahora, Siguiente), 
+    resto_horario( Siguiente, Destino, Resto).
+
+resto_horario( Sitio salida Hora1, Destino, [ esperar( Sitio, Hora1, Hora2) | Resto]) :-
+    transbordo( Sitio salida Hora2, _),
+    es_antes(Hora1, Hora2), 
+    horario( Sitio salida Hora2, Destino, Resto). 
+transbordo( Sitio1, Sitio2) :- 
+    horario( List),
+    concatenar( _, [Sitio1,Sitio2|_ ], List).
+
+diferencia( H1:Min1, H2:Min2, Diff) :- 
+    Diff is 60 * (H2 - H1) + Min2 - Min1.
+
+es_antes(Hora1,Hora2):-
+    diferencia(Hora1,Hora2,Diff), Diff>0.
+list([]).
+dist([_|L]):-list(L).
+
+concatenar([], L,L).
+concatenar([X|L1], L2, [X|L3]):- concatenar(L1,L2,L3).
+#+END_SRC
+
+Se pide:
+- Corregir el programa para que
+  funcione, dejar el programa que
+  funcione en el mismo bloque de código.
+
+- Desde Santander a las 9:10, ¿a que
+  hora llegaremos a Solares? Poner
+  la consulta que hay que hacer para
+  responder a esta pregunta.
+
+
+#+BEGIN_SRC respuesta
+
+#+END_SRC
+
+- Escribir una consulta para que nos
+  de una ruta desde Beranga hasta
+  Santander, estar en Santander 45
+  minutos y volver a Beranga en el
+  mismo día.
+
+#+BEGIN_SRC respuesta
+
+#+END_SRC
+
+
+
+- ¿Existe alguna forma salir de
+  Santander, visitar Beranga y
+  volver a Santander en el mismo
+  día? ¿qué consulta hay que poner?
+  ¿funciona esa consulta? Si no
+  funciona, explicar porque y dad
+  una forma de solucionarlo.
+
+
+#+BEGIN_SRC respuesta
+
+#+END_SRC
+
