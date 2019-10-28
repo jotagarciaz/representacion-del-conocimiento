@@ -1,0 +1,34 @@
+// FormulaDot
+digraph {
+	1 [label="expr 1"]
+	2 [label="expr 2"]
+	"const 2" [label=x]
+	"const 2" -> 2
+	"or 3" [label="∨"]
+	"or 3" -> 1
+	4 [label="expr 4"]
+	"not 4" [label="¬"]
+	"not 4" -> 4
+	5 [label="expr 5"]
+	"lparen 5" [label="("]
+	"lparen 5" -> 5
+	6 [label="expr 6"]
+	"const 6" [label=y]
+	"const 6" -> 6
+	"or 7" [label="∧"]
+	"or 7" -> 1
+	8 [label="expr 8"]
+	"const 8" [label=x]
+	"const 8" -> 8
+	9 [label="expr 9"]
+	"rparen 9" [label=")"]
+	"rparen 9" -> 9
+	2 -> 1
+	3 -> 1
+	4 -> 1
+	5 -> 1
+	6 -> 1
+	7 -> 1
+	8 -> 1
+	9 -> 1
+}

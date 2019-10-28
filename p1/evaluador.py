@@ -156,31 +156,41 @@ class FormulaDot(FormulaBooleana):
 
         dot = Digraph(comment='FormulaDot',format='png')
 
-        
-        """
-        if self._acepta('LPAREN'):
-            formula_value = self.formula()
-            self._espera('RPAREN')
-            conj_value = formula_value
-        elif self._acepta('CONST'):
-            conj_value =  self.asig[self.current_token.value]
-        if self._acepta('NOT'):
-            formula_value = self.formula()
-            conj_value = formula_value
-            conj_value = not conj_value
-        return conj_value
-        """
-       
 
         aux = list(self.tokens)
+        print(aux)
         num_nodes = len(aux)
-        for i in range(1,num_nodes+1):
-            dot.node('{0}'.format(i),label="expr {0}".format(i))
-            if aux[i-1].type == 'CONST':
-                dot.node('const {0}'.format(i),label=aux[i-1].value)
-                dot.edge('const {0}'.format(i),'{0}'.format(i))
+        print(num_nodes)
+        dot.node('1',label="expr 1")
+        aux_lparen=1
+        for i in range(0,num_nodes):
+            if aux[i].type == 'CONST':
+                dot.node('{0}'.format(i+2),label="expr {0}".format(i+2))
+                dot.node('const {0}'.format(i+2),label=aux[i].value)
+                dot.edge('const {0}'.format(i+2),'{0}'.format(i+2))
+            if aux[i].type == 'NOT':
+                dot.node('{0}'.format(i+2),label="expr {0}".format(i+2))
+                dot.node('not {0}'.format(i+2),label=aux[i].value)
+                dot.edge('not {0}'.format(i+2),'{0}'.format(i+2))
+            if aux[i].type == 'LPAREN':
+                #aux_lparen += 1
+                dot.node('{0}'.format(i+2),label="expr {0}".format(i+2))
+                dot.node('lparen {0}'.format(i+2),label=aux[i].value)
+                dot.edge('lparen {0}'.format(i+2),'{0}'.format(i+2))
+            if aux[i].type == 'RPAREN':
+                #aux_lparen -= 1
+                dot.node('{0}'.format(i+2),label="expr {0}".format(i+2))
+                dot.node('rparen {0}'.format(i+2),label=aux[i].value)
+                dot.edge('rparen {0}'.format(i+2),'{0}'.format(i+2))
+            if aux[i].type == 'AND':
+                dot.node('or {0}'.format(i+2),label=aux[i].value)
+                dot.edge('or {0}'.format(i+2),'{0}'.format(aux_lparen))
+            if aux[i].type == 'OR':
+                dot.node('or {0}'.format(i+2),label=aux[i].value)
+                dot.edge('or {0}'.format(i+2),'{0}'.format(aux_lparen))
+      
 
-        for i in range(2,num_nodes+1):
+        for i in range(2,num_nodes+2):
             dot.edge('{0}'.format(i),'1')
         
         dot.render(view=True)
