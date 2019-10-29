@@ -1,0 +1,13 @@
+digraph g{
+   expr2 [label="expr2"];
+   OR1 [label="∨"];
+   expr3 [label="expr3"];
+   expr1 -> expr2, OR1, expr3 ;
+   expr4 [label="expr2"];
+   AND1 [label="∧"];
+   expr5 [label="expr3"];
+   expr2 -> expr4, AND1,expr5 ;
+   expr5 -> x;
+   expr4 -> y;
+   expr3 -> t;
+}

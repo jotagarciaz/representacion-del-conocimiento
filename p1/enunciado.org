@@ -1,0 +1,295 @@
+#+LANGUAGE: es
+#+LATEX_HEADER: \usepackage[AUTO]{babel}
+#+TITLE: Evaluación de fórmulas booleanas
+#+DATE:
+* Literate Programming
+
+
+
+El concepto de «Literate Programming» es un paradigma en programación
+introducido por Donald Knuth, donde el código y la explicación en
+lenguaje natural están intercaladas permitiendo así una legibilidad
+mayor.
+
+Para practicar este paradigma, vamos a realizar una práctica de
+«parsear» y evaluar fórmulas booleanas.
+En esta práctica, para evaluar  fórmulas booleanas, viéndolas como
+árboles de derivación vamos a programar un sencillo analizador
+sintáctico recursivo («recursive descent parser») y un sencillo
+analizador léxico («lexer»).
+
+Lo primero es que utilizaremos el siguiente código para «debuguear»
+los  fallos:
+#+BEGIN_SRC python :session prueba :results output
+import re
+import collections
+from functools import wraps, partial
+
+def debug_method(func= None, prefix = ''):
+    if func is None:
+        return partial(debug, prefix = prefix)
+    else:
+        msg = prefix + func.__name__
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            print(msg)
+            return func(*args,**kwargs)
+        return wrapper
+
+def debug_class(cls):
+    for key, val in vars(cls).items():
+        if callable(val):
+            setattr(cls, key, debug_method(val))
+    return cls
+print("Evaluado el codigo")
+#+END_SRC
+
+#+RESULTS:
+: Evaluado el codigo
+: 
+: 
+
+También sería necesario que evaluar el siguiente código 
+lisp (con C-x C-e):
+
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
+(setq indent-line-function 'insert-tab)
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((dot . t)))
+
+
+
+Empezaremos por el analizador léxico, poniendo un ejemplo:
+
+#+BEGIN_SRC python :session prueba :results output
+separacion = 60
+
+CONST     = r'(?P<CONST>[a-z][A-Z]*)'
+NUM     = r'(?P<NUM>\d+)'
+PLUS    = r'(?P<PLUS>\+)'
+MINUS   = r'(?P<MINUS>-)'
+OR    = r'(?P<OR>∨)'
+AND   = r'(?P<AND>∧)'
+NOT   = r'(?P<NOT>¬)'
+TIMES   = r'(?P<TIMES>\*)'
+DIVIDE  = r'(?P<DIVIDE>/)'
+LPAREN  = r'(?P<LPAREN>\()'
+RPAREN  = r'(?P<RPAREN>\))'
+WS      = r'(?P<WS>\s+)'
+VERDADERO  = r'(?P<VERDADERO>TRUE)'
+FALSO  = r'(?P<FALSO>FALSE)'
+
+master_pattern = re.compile('|'.join((CONST,NUM, PLUS, MINUS, OR, AND, NOT,
+                                      TIMES, DIVIDE, LPAREN, RPAREN, WS,
+                                      VERDADERO, FALSO)))
+Token = collections.namedtuple('Token', ['type', 'value'])
+
+
+def lista_tokens(pattern, text):
+    scanner = pattern.scanner(text)
+    for m in iter(scanner.match, None):
+        token = Token(m.lastgroup, m.group())
+
+        if token.type != 'WS':
+            yield token
+
+print(list(lista_tokens(master_pattern,'x ∨ y' )))
+#+END_SRC
+
+#+RESULTS:
+: [Token(type='CONST', value='x'), Token(type='OR', value='∨'), Token(type='CONST', value='y')]
+: 
+: 
+
+Aquí podemos ver los tres tokens que se generan. Son los que esperan,
+si la entrada es 'x ∨ y' . El analizador sintáctico es más complejo,
+ya que necesitamos definir una gramática.
+
+#+BEGIN_SRC python :session prueba :results output
+  class FormulaBooleana:
+    '''
+    Pequeña implementación de un parser de formulaesiones booleanas.
+    Implementation of a recursive descent parser.
+    Aquí la asignacion es un diccionario con variables.
+    '''
+    def parse(self, text, asig):
+          self.tokens = lista_tokens(master_pattern, text)
+          self.current_token = None
+          self.next_token = None
+          self._avanza()
+          self.asig = asig
+          return self.formula()
+    def _avanza(self):
+            self.current_token, self.next_token = self.next_token, next(self.tokens, None)
+    def _acepta(self, token_type):
+            # if there is next token and token type matches
+            if self.next_token and self.next_token.type == token_type:
+              self._avanza()
+              return True
+            else:
+              return False
+
+    def _espera(self, token_type):
+            if not self._acepta(token_type):
+              raise SyntaxError('Expected ' + token_type)
+
+    def formula(self):
+            '''
+            formula : conjuncion | conjuncion ∨ formula
+            '''
+            formula_value = self.conjuncion()
+            if self._acepta('OR'):
+              formula_value = formula_value | self.formula()
+            return formula_value
+
+    def conjuncion(self):
+            '''
+            conjuncion : clausula | clausula ∧ conjuncion
+            '''
+
+            conj_value = self.clausula()
+            if self._acepta('AND'):
+              conj_value = conj_value & self.conjuncion()
+            return conj_value
+
+    def clausula(self):
+            '''
+            clausula : CONST | (formula)
+
+            '''
+            # Si aparece un parentesis
+            if self._acepta('LPAREN'):
+              formula_value = self.formula()
+              self._espera('RPAREN')
+              return formula_value
+            elif self._acepta('CONST'):
+              return self.asig[self.current_token.value]
+  e= FormulaBooleana()
+  print(e.parse('x ∨ (y ∧ y ∧ x)',{'x':False, 'y':False}))
+#+END_SRC
+
+#+RESULTS:
+: False
+: 
+: 
+
+A continuación, damos las tareas a realizar.
+* Primera pregunta
+
+
+Crear una clase hija de **FormulaBooleana**, llamada **FormulaGeneral**, de forma que se admita el
+operador ¬ en la formula booleana.
+
+
+#+BEGIN_SRC python :session prueba :results output
+class FormulaGeneral(FormulaBooleana):
+    '''
+    Pequeña implementación de un parser de formulaesiones booleanas.
+    Implementation of a recursive descent parser.
+    Aquí la asignacion es un diccionario con variables.
+    '''
+    
+    def clausula(self):
+        '''
+        clausula:  ¬ CONST | ¬ (formula)
+        
+        '''
+        if self._acepta('LPAREN'):
+            formula_value = self.formula()
+            self._espera('RPAREN')
+            conj_value = formula_value
+        elif self._acepta('CONST'):
+            conj_value =  self.asig[self.current_token.value]
+        if self._acepta('NOT'):
+            formula_value = self.formula()
+            conj_value = formula_value
+            conj_value = not conj_value
+        return conj_value
+
+
+e = FormulaGeneral()
+print(e.parse('¬ x ∨ ¬(y ∧ x)',{'x':True , 'y':False}))
+
+#+END_SRC
+
+#+RESULTS:
+: False
+: 
+: 
+
+
+* Segunda pregunta
+
+
+Crear un método que, dada una formula booleana, devuelva si es
+satisfactible, y, en ese caso, un diccionario con una asignación que
+de verdadero.
+* Tercera pregunta
+
+
+Generar otra clase hija  **FormulaDot**, que genere un dibujo del
+árbol de derivación, utilizando el lenguaje dot. Aquí se pone un
+ejemplo
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((dot . t)))
+
+#+begin_src dot :file ejemplo.png :cmdline -Tpng :exports none :results silent
+digraph g{
+   expr2 [label="expr2"];
+   OR1 [label="∨"];
+   expr3 [label="expr3"];
+   expr1 -> expr2, OR1, expr3 ;
+   expr4 [label="expr2"];
+   AND1 [label="∧"];
+   expr5 [label="expr3"];
+   expr2 -> expr4, AND1,expr5 ;
+   expr5 -> x;
+   expr4 -> y;
+   expr3 -> t;
+}
+#+end_src
+#+CAPTION: Ejemplo de figura y∧x∨t
+#+ATTR_LATEX: :width 0.50\linewidth
+[[file:ejemplo.png]]
+
+
+#+BEGIN_SRC python :session prueba :results output
+
+
+class FormulaDot(FormulaBooleana):
+    
+    def clausula(self):
+        '''
+        clausula : negacion | ¬ negacion
+        '''
+         if self._acepta('LPAREN'):
+            formula_value = self.formula()
+            self._espera('RPAREN')
+            conj_value = formula_value
+        elif self._acepta('CONST'):
+            conj_value =  self.asig[self.current_token.value]
+        if self._acepta('NOT'):
+            formula_value = self.formula()
+            conj_value = formula_value
+            conj_value = not conj_value
+        return conj_value
+
+
+e = FormulaGeneral()
+print(e.parse('¬ x ∨ ¬(y ∧ x)',{'x':True , 'y':False}))
+
+#+END_SRC
+
+#+RESULTS:
+: Traceback (most recent call last):
+:   File "<stdin>", line 1, in <module>
+:   File "/var/folders/zg/ztpn0qys6lscm_n_9fmpr1840000gn/T/babel-zmVqy4/python-NOKBIm", line 14
+:     print(e.print_dot(e.parse('x ∨ ¬(y ∧ x)',{'x':True, 'y':False}))))
+:                                                                      ^
+: SyntaxError: invalid syntax
+: 
+: 
