@@ -16,7 +16,7 @@ digraph {
 	"const 5" [label=y]
 	"const 5" -> 5
 	"or 6" [label="∧"]
-	"or 6" -> 1
+	"or 6" -> 3
 	6 [label="expr 6"]
 	"const 6" [label=x]
 	"const 6" -> 6
