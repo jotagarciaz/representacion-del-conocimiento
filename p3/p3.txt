@@ -1,38 +1,44 @@
- cuadricula(X,Y):-
+cuadricula(X,Y):-
 	1=<X, X=<5,
 	1=<Y, Y=<5.
 
-ir(cuadricula(X,Y),cuadricula(X,Y)).
 
-ir(cuadricula(X,Y), cuadricula(XB,YB)):-
+ir(cuadricula(X,Y),cuadricula(X,Y), cuadricula(X,Y)).
+
+ir(cuadricula(X,Y), cuadricula(XB,YB), cuadricula(XA,YA)):-
 	X = XB,
 	Y > YB,
-	ir(cuadricula(X,Y-1), cuadricula(XB,YB)).
+	YA is Y-1,
+	XA is X.
 
-ir(cuadricula(X,Y), cuadricula(XB,YB)):-
+ir(cuadricula(X,Y), cuadricula(XB,YB), cuadricula(XA,YA)):-
 	X = XB, 
 	Y < YB,
-	ir(cuadricula(X,Y+1), cuadricula(XB,YB)).
+	YA is Y+1,
+	XA is X.
 
-ir(cuadricula(X,Y), cuadricula(XB,YB)):-
+ir(cuadricula(X,Y), cuadricula(XB,YB), cuadricula(XA,YA)):-
 	X > XB,
-	ir(cuadricula(X-1, Y), cuadricula(XB,YB)).
+	XA is X-1,
+	YA is Y.
 
-ir(cuadricula(X,Y), cuadricula(XB,YB)):-
+ir(cuadricula(X,Y), cuadricula(XB,YB), cuadricula(XA,YA)):-
 	X < XB,
-	ir(cuadricula(X+1,Y), cuadricula(XB,YB)). 
+	XA = X+1,
+	YA is Y. 
 
 % El estado se compone de tres posiciones, la posicion del robot, de la papelera y la basura.
 estado(cuadricula(1,1),cuadricula(1,2), cuadricula(1,3)).
 
+% El robot  puede soltar la basura si esta cargada y estamos al lado de la papelera.
+accion(estado(Pos1, Pos1, cargada), soltar, estado(Pos1, Pos1, en_papelera)).
+
 % El robot  puede recoger la basura si esta encima de ella.
 accion(estado(Pos1,Pos2, Pos1), recoger, estado(Pos1, Pos2, cargada)).
-% El robot  puede soltar la basura si esta cargada y estamos al lado de la papelera.
-accion(estado(Pos1,Pos1, cargada), soltar, estado(Pos1, Pos1, en_papelera)).
 
 % El robot puede moverse entre las distintas posiciones.
-accion(estado(Pos1, Pos2, cargada), ir(Pos1, Pos2), estado(Pos2, Pos2, cargada)).
-accion(estado(Pos1, Pos2, Pos3), ir(Pos1, Pos3), estado(Pos3, Pos2, Pos3)).
+accion(estado(Pos1, Pos2, cargada), ir(Pos1, Pos2, Pos3), estado(Pos3, Pos2, cargada)).
+accion(estado(Pos1, Pos2, Pos3), ir(Pos1, Pos3, Pos4), estado(Pos4, Pos2, Pos3)):- ir(Pos1,Pos3,Pos4).
 
 %% Los planes empiezan en un estado y acaban en otro.
 

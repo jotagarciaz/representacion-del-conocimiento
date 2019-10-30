@@ -1,7 +1,6 @@
 * Primera pregunta
 
 
-
 Para programar el comportamiento de un robot ROMBLA™ (a partir de ahora se
 llamara el robot), se ha decidido modelar una habitación  
 como una cuadrícula de tres por tres. Dentro de la habitación, hay un
@@ -48,6 +47,7 @@ a cuadricula(x+1,y),  cuadricula(x-1,y), cuadricula(x,y+1),
 cuadricula(x,y-1).
 
 * Segunda Pregunta
+
 
 
 Se quiere realizar un viaje en autobús en Cantabria. 
