@@ -160,37 +160,46 @@ class FormulaDot(FormulaBooleana):
         aux = list(self.tokens)
         print(aux)
         num_nodes = len(aux)
+        num_expre = 0
         print(num_nodes)
         dot.node('1',label="expr 1")
-        aux_lparen=1
+        """ 
+            array donde se guardan las posiciones de los parentesis, y del nodo principal, para poder ubicar el resto de nodos
+            si se lee abrir parentesis se añade al final un indice si se lee cerrar parentesis lo quita.
+
+            Las consultas siempre se realizan en el ultimo elemento del array
+        """
+        aux_lparen = [1]
         for i in range(0,num_nodes):
             if aux[i].type == 'CONST':
-                dot.node('{0}'.format(i+2),label="expr {0}".format(i+2))
-                dot.node('const {0}'.format(i+2),label=aux[i].value)
-                dot.edge('const {0}'.format(i+2),'{0}'.format(i+2))
+                dot.node('{0}'.format(i-num_expre+2),label="expr {0}".format(i-num_expre+2))
+                dot.node('const {0}'.format(i-num_expre+2),label=aux[i].value)
+                dot.edge('const {0}'.format(i-num_expre+2),'{0}'.format(i-num_expre+2))
             if aux[i].type == 'NOT':
-                dot.node('{0}'.format(i+2),label="expr {0}".format(i+2))
-                dot.node('not {0}'.format(i+2),label=aux[i].value)
-                dot.edge('not {0}'.format(i+2),'{0}'.format(i+2))
+                dot.node('{0}'.format(i-num_expre+2),label="expr {0}".format(i-num_expre+2))
+                dot.node('not {0}'.format(i-num_expre+2),label=aux[i].value)
+                dot.edge('not {0}'.format(i-num_expre+2),'{0}'.format(i-num_expre+2))
             if aux[i].type == 'LPAREN':
-                #aux_lparen += 1
-                dot.node('{0}'.format(i+2),label="expr {0}".format(i+2))
-                dot.node('lparen {0}'.format(i+2),label=aux[i].value)
-                dot.edge('lparen {0}'.format(i+2),'{0}'.format(i+2))
+                aux_lparen.append(i)
+                dot.node('{0}'.format(i-num_expre+2),label="expr {0}".format(i-num_expre+2))
+                dot.node('lparen {0}'.format(i-num_expre+2),label=aux[i].value)
+                dot.edge('lparen {0}'.format(i-num_expre+2),'{0}'.format(i-num_expre+2))
             if aux[i].type == 'RPAREN':
-                #aux_lparen -= 1
-                dot.node('{0}'.format(i+2),label="expr {0}".format(i+2))
-                dot.node('rparen {0}'.format(i+2),label=aux[i].value)
-                dot.edge('rparen {0}'.format(i+2),'{0}'.format(i+2))
+                aux_lparen.pop()
+                dot.node('{0}'.format(i-num_expre+2),label="expr {0}".format(i-num_expre+2))
+                dot.node('rparen {0}'.format(i-num_expre+2),label=aux[i].value)
+                dot.edge('rparen {0}'.format(i-num_expre+2),'{0}'.format(i-num_expre+2))
             if aux[i].type == 'AND':
-                dot.node('or {0}'.format(i+2),label=aux[i].value)
-                dot.edge('or {0}'.format(i+2),'{0}'.format(aux_lparen))
+                dot.node('or {0}'.format(i-num_expre+2),label=aux[i].value)
+                dot.edge('or {0}'.format(i-num_expre+2),'{0}'.format(aux_lparen[-1]))
+                num_expre +=1
             if aux[i].type == 'OR':
-                dot.node('or {0}'.format(i+2),label=aux[i].value)
-                dot.edge('or {0}'.format(i+2),'{0}'.format(aux_lparen))
+                dot.node('or {0}'.format(i-num_expre+2),label=aux[i].value)
+                dot.edge('or {0}'.format(i-num_expre+2),'{0}'.format(aux_lparen[-1]))
+                num_expre +=1
       
 
-        for i in range(2,num_nodes+2):
+        for i in range(2,num_expre+2):
             dot.edge('{0}'.format(i),'1')
         
         dot.render(view=True)
