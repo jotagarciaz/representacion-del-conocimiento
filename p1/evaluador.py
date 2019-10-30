@@ -160,8 +160,7 @@ class FormulaDot(FormulaBooleana):
         aux = list(self.tokens)
         print(aux)
         num_nodes = len(aux)
-        num_expre = 0
-        print(num_nodes)
+
         dot.node('1',label="expr 1")
         """ 
             array donde se guardan las posiciones de los parentesis, y del nodo principal, para poder ubicar el resto de nodos
@@ -170,37 +169,61 @@ class FormulaDot(FormulaBooleana):
             Las consultas siempre se realizan en el ultimo elemento del array
         """
         aux_lparen = [1]
+        aux_expre = [1]
+        altura = [1]
         for i in range(0,num_nodes):
+            # CONST tiene que crear dos nodos, el de valor y la expresión, el nodo del valor se conecta a la expr, y el nodo expr se conecta al padre
+            # dentro baja dos niveles, vuelves al nivel superior
             if aux[i].type == 'CONST':
-                dot.node('{0}'.format(i-num_expre+2),label="expr {0}".format(i-num_expre+2))
-                dot.node('const {0}'.format(i-num_expre+2),label=aux[i].value)
-                dot.edge('const {0}'.format(i-num_expre+2),'{0}'.format(i-num_expre+2))
+                expr = aux_expre[-1]+1
+                dot.node('{0}'.format(i+2),label="expr {0}".format(expr))
+                dot.node('const {0}'.format(i+2),label=aux[i].value) 
+                aux_expre.append(expr)    
+                dot.edge('const {0}'.format(i+2),'{0}'.format(aux_expre[-1]))
+                dot.edge('{0}'.format(expr),'{0}'.format(aux_expre[-2]))
+            
+            # AND or OR tiene que crear un nodo valor, el nodo valor se conecta con el padre
+            # dentro baja un nivel, al salir vuelves al nivel superior        
+            if aux[i].type == 'AND' or aux[i].type == 'OR':
+                aux_expre.pop()
+                dot.node('op {0}'.format(i+2),label=aux[i].value)
+                dot.edge('op {0}'.format(i+2),'{0}'.format(aux_expre[-1]))
+            
+            # NOT tiene que crear 3 nodos, un nodo valor y dos nodos expresiones, el nodo valor se conecta con el primer nodo de expresion, las expresiones se conectan con el padre
+            # dentro baja dos y un nivel, al salir ha bajado dos niveles (se encuentra en la segunda expresion).
             if aux[i].type == 'NOT':
-                dot.node('{0}'.format(i-num_expre+2),label="expr {0}".format(i-num_expre+2))
-                dot.node('not {0}'.format(i-num_expre+2),label=aux[i].value)
-                dot.edge('not {0}'.format(i-num_expre+2),'{0}'.format(i-num_expre+2))
+                altura = altura.append(altura[-1]+2)
+                expr = aux_expre[-1]+1
+                dot.node('{0}'.format(i+2),label="expr {0}".format(i+2))
+                dot.node('not {0}'.format(i+2),label=aux[i].value)
+                dot.node('not {0}'.format(i+2),label=aux[i].value)
+                dot.edge('not {0}'.format(i+2),'{0}'.format(i+2))
+                dot.edge('not {0}'.format(i+2),'{0}'.format(i+2))
+                
+            
+            # LPAREN tiene que crear 3 nodos, un nodo valor y dos nodos expresiones, el nodo valor se conecta con el primer nodo de expresion, las expresiones se conectan con el padre
+            # dentro baja dos y un nivel, al salir ha bajado dos niveles (se encuentra en la segunda expresion).
             if aux[i].type == 'LPAREN':
+                altura = altura.append(altura[-1]+2)
                 aux_lparen.append(i)
-                dot.node('{0}'.format(i-num_expre+2),label="expr {0}".format(i-num_expre+2))
-                dot.node('lparen {0}'.format(i-num_expre+2),label=aux[i].value)
-                dot.edge('lparen {0}'.format(i-num_expre+2),'{0}'.format(i-num_expre+2))
+                dot.node('{0}'.format(i+2),label="expr {0}".format(i+2))
+                dot.node('lparen {0}'.format(i+2),label=aux[i].value)
+                dot.edge('lparen {0}'.format(i+2),'{0}'.format(i+2))
+                
+            
+            # RPAREN tiene que crear dos nodos, el de valor y la expresión, el nodo del valor se conecta a la expr, y el nodo expr se conecta al padre
+            # entra bajando un nivel, al salir vuelves al nivel en el que estabas
             if aux[i].type == 'RPAREN':
+                altura = altura.pop()
                 aux_lparen.pop()
-                dot.node('{0}'.format(i-num_expre+2),label="expr {0}".format(i-num_expre+2))
-                dot.node('rparen {0}'.format(i-num_expre+2),label=aux[i].value)
-                dot.edge('rparen {0}'.format(i-num_expre+2),'{0}'.format(i-num_expre+2))
-            if aux[i].type == 'AND':
-                dot.node('or {0}'.format(i-num_expre+2),label=aux[i].value)
-                dot.edge('or {0}'.format(i-num_expre+2),'{0}'.format(aux_lparen[-1]))
-                num_expre +=1
-            if aux[i].type == 'OR':
-                dot.node('or {0}'.format(i-num_expre+2),label=aux[i].value)
-                dot.edge('or {0}'.format(i-num_expre+2),'{0}'.format(aux_lparen[-1]))
-                num_expre +=1
-      
+                dot.node('{0}'.format(i+2),label="expr {0}".format(i+2))
+                dot.node('rparen {0}'.format(i+2),label=aux[i].value)
+                dot.edge('rparen {0}'.format(i+2),'{0}'.format(i+2))
+                
 
-        for i in range(2,num_expre+2):
-            dot.edge('{0}'.format(i),'1')
+
+        """for i in range(2,num_expre+2):
+            dot.edge('{0}'.format(i),'1')"""
         
         dot.render(view=True)
 
