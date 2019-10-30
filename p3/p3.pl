@@ -22,9 +22,8 @@ horario( [ solares salida 18:15, guarnizo salida 18:35, lierganes salida 19:05, 
 horario( [ solares salida 19:15, guarnizo salida 19:35, lierganes salida 20:05, santander salida 20:20 ]).
 % horario( StartPLace salida StartTime, EndPlace salida EndTime, Horario)
 plan( Inicio,  Destino, [ salida(Inicio), llegada( Siguiente) | Resto]) :-
-    list( Resto), 
     transbordo( Inicio, Siguiente),
-    resto_horario(Siguiente ,Destino, Resto).
+    resto_horario(Siguiente, Destino, Resto).
 
 resto_horario( Sitio, Sitio, []).
 
@@ -35,7 +34,8 @@ resto_horario( Ahora, Destino, [ llegada( Siguiente) | Resto]) :-
 resto_horario( Sitio salida Hora1, Destino, [ esperar( Sitio, Hora1, Hora2) | Resto]) :-
     transbordo( Sitio salida Hora2, _),
     es_antes(Hora1, Hora2), 
-    horario( Sitio salida Hora2, Destino, Resto). 
+    horario( [Sitio salida Hora2, Destino, Resto]). 
+     
 transbordo( Sitio1, Sitio2) :- 
     horario( List),
     concatenar( _, [Sitio1,Sitio2|_ ], List).
