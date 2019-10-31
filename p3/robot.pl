@@ -17,12 +17,12 @@ ir(cuadricula(X,Y), cuadricula(XB,YB), cuadricula(XA,YA)):-
 	YA is Y+1,
 	XA is X.
 
-ir(cuadricula(X,Y), cuadricula(XB,YB), cuadricula(XA,YA)):-
+ir(cuadricula(X,Y), cuadricula(XB,_YB), cuadricula(XA,YA)):-
 	X > XB,
 	XA is X-1,
 	YA is Y.
 
-ir(cuadricula(X,Y), cuadricula(XB,YB), cuadricula(XA,YA)):-
+ir(cuadricula(X,Y), cuadricula(XB,_YB), cuadricula(XA,YA)):-
 	X < XB,
 	XA = X+1,
 	YA is Y. 
