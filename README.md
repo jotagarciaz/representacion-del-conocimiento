@@ -1,5 +1,6 @@
-# representacion del conocimiento
- 
+# Representación del Conocimiento. 
+
+
 # Práctica 3. Práctica de Prolog avanzado.
 
 Esta práctica consiste de dos partes: 
