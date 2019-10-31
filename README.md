@@ -1,5 +1,11 @@
 # Representación del Conocimiento. 
 
+Práctica | Lenguaje usado
+------------ | -------------
+[Práctica 1](#practica-1) | Python
+[Práctica 2](#practica-2) | Prolog
+[Práctica 3](#practica-3) | Prolog
+
 
 # Práctica 3. Práctica de Prolog avanzado.
 
