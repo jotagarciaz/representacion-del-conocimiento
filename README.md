@@ -6,8 +6,10 @@ Práctica | Lenguaje usado
 [Práctica 2](#practica-2) | Prolog
 [Práctica 3](#practica-3) | Prolog
 
+## Práctica 1. Práctica de lógica.
+El código de esta práctica puede ser encontrado en la carpeta "[p1](/p1)".
 
-# Práctica 3. Práctica de Prolog avanzado.
+## Práctica 3. Práctica de Prolog avanzado.
 
 Esta práctica consiste de dos partes: 
 
