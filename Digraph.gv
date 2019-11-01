@@ -19,20 +19,24 @@ digraph {
 	"not 5" -> "superior 5"
 	"expr 5" -> "superior 5"
 	"superior 5" -> "expr 2"
+	"superior 6" [label="expr 6"]
 	"expr 6" [label="expr 6"]
 	"lparen 6" [label="("]
-	"lparen 6" -> "expr 5"
-	"expr 6" -> "expr 5"
+	"lparen 6" -> "superior 6"
+	"expr 6" -> "superior 6"
+	"superior 6" -> "expr 5"
 	"expr 7" [label="expr 7"]
 	"const 7" [label=y]
 	"const 7" -> "expr 7"
 	"expr 7" -> "expr 6"
 	"op 8" [label="∧"]
 	"op 8" -> "expr 6"
+	"superior 9" [label="expr 7"]
 	"expr 9" [label="expr 7"]
 	"lparen 9" [label="("]
-	"lparen 9" -> "expr 6"
-	"expr 9" -> "expr 6"
+	"lparen 9" -> "superior 9"
+	"expr 9" -> "superior 9"
+	"superior 9" -> "expr 6"
 	"expr 10" [label="expr 10"]
 	"const 10" [label=x]
 	"const 10" -> "expr 10"
@@ -50,7 +54,7 @@ digraph {
 	"const 13" -> "expr 13"
 	"expr 13" -> "expr 12"
 	"rparen 14" [label=")"]
-	"rparen 14" -> "expr 9"
+	"rparen 14" -> "superior 9"
 	"rparen 15" [label=")"]
-	"rparen 15" -> "expr 6"
+	"rparen 15" -> "superior 6"
 }
