@@ -148,6 +148,12 @@ class FormulaGeneral(FormulaBooleana):
         return conj_value
 
 class FormulaDot(FormulaBooleana):
+    def parse(self, text, asig):
+        self.tokens = lista_tokens(master_pattern, text)
+        self.current_token = None
+        self.next_token = None
+        self.asig = asig
+        return self.formula()
     
     def clausula(self):
         '''
@@ -192,7 +198,7 @@ class FormulaDot(FormulaBooleana):
             # NOT tiene que crear 3 nodos, un nodo valor y dos nodos expresiones, el nodo valor se conecta con el primer nodo de expresion, las expresiones se conectan con el padre
             # dentro baja dos y un nivel, al salir ha bajado dos niveles (se encuentra en la segunda expresion).
             if aux[i].type == 'NOT':
-                altura = altura.append(altura[-1]+2)
+                #altura = altura.append(altura[-1]+2)
                 expr = aux_expre[-1]+1
                 dot.node('{0}'.format(i+2),label="expr {0}".format(i+2))
                 dot.node('not {0}'.format(i+2),label=aux[i].value)
@@ -204,7 +210,7 @@ class FormulaDot(FormulaBooleana):
             # LPAREN tiene que crear 3 nodos, un nodo valor y dos nodos expresiones, el nodo valor se conecta con el primer nodo de expresion, las expresiones se conectan con el padre
             # dentro baja dos y un nivel, al salir ha bajado dos niveles (se encuentra en la segunda expresion).
             if aux[i].type == 'LPAREN':
-                altura = altura.append(altura[-1]+2)
+                #altura = altura.append(altura[-1]+2)
                 aux_lparen.append(i)
                 dot.node('{0}'.format(i+2),label="expr {0}".format(i+2))
                 dot.node('lparen {0}'.format(i+2),label=aux[i].value)
@@ -214,7 +220,7 @@ class FormulaDot(FormulaBooleana):
             # RPAREN tiene que crear dos nodos, el de valor y la expresión, el nodo del valor se conecta a la expr, y el nodo expr se conecta al padre
             # entra bajando un nivel, al salir vuelves al nivel en el que estabas
             if aux[i].type == 'RPAREN':
-                altura = altura.pop()
+                #altura = altura.pop()
                 aux_lparen.pop()
                 dot.node('{0}'.format(i+2),label="expr {0}".format(i+2))
                 dot.node('rparen {0}'.format(i+2),label=aux[i].value)
