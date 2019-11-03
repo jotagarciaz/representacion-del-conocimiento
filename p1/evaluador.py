@@ -169,12 +169,13 @@ class FormulaDot(FormulaBooleana):
 
 		dot.node('expr 1',label="expr 1")
 		padre = [1]
+		num_expr = padre[-1]+1
 		for i in range(0,num_nodes):
 			aux_index = i+2
 			# CONST tiene que crear dos nodos, el de valor y la expresión, el nodo del valor se conecta a la expr, y el nodo expr se conecta al padre
 			# dentro baja dos niveles, vuelves al nivel superior
 			if aux[i].type == 'CONST':
-				dot.node('expr {0}'.format(aux_index),label="expr {0}".format(padre[-1]+1))
+				dot.node('expr {0}'.format(aux_index),label="expr {0}".format(num_expr))
 				dot.node('const {0}'.format(aux_index),label=aux[i].value)
 				dot.edge('expr {0}'.format(aux_index),'const {0}'.format(aux_index))
 				dot.edge('expr {0}'.format(padre[-1]),'expr {0}'.format(aux_index))
@@ -182,6 +183,7 @@ class FormulaDot(FormulaBooleana):
 			# AND or OR tiene que crear un nodo valor, el nodo valor se conecta con el padre
 			# dentro baja un nivel, al salir vuelves al nivel superior        
 			elif aux[i].type == 'AND' or aux[i].type == 'OR':
+				num_expr += 1
 				dot.node('op {0}'.format(aux_index),label=aux[i].value)
 				dot.edge('expr {0}'.format(padre[-1]),'op {0}'.format(aux_index))
 			
@@ -189,8 +191,8 @@ class FormulaDot(FormulaBooleana):
 			# dentro baja dos y un nivel, al salir ha bajado dos niveles (se encuentra en la segunda expresion).
 			elif aux[i].type == 'NOT':
 				#altura = altura.append(altura[-1]+2)
-				dot.node('superior {0}'.format(aux_index),label="expr {0}".format(padre[-1]+1))
-				dot.node('expr {0}'.format(aux_index),label="expr {0}".format(padre[-1]+1))
+				dot.node('superior {0}'.format(aux_index),label="expr {0}".format(num_expr))
+				dot.node('expr {0}'.format(aux_index),label="expr {0}".format(num_expr))
 				dot.node('not {0}'.format(aux_index),label=aux[i].value)
 				dot.edge('superior {0}'.format(aux_index),'not {0}'.format(aux_index))
 				dot.edge('superior {0}'.format(aux_index),'expr {0}'.format(aux_index))
@@ -204,8 +206,8 @@ class FormulaDot(FormulaBooleana):
 			# dentro baja dos y un nivel, al salir ha bajado dos niveles (se encuentra en la segunda expresion).
 			elif aux[i].type == 'LPAREN':
 				#altura = altura.append(altura[-1]+2)
-				dot.node('superior {0}'.format(aux_index),label="expr {0}".format(padre[-1]+1))
-				dot.node('expr {0}'.format(aux_index),label="expr {0}".format(padre[-1]+1))
+				dot.node('superior {0}'.format(aux_index),label="expr {0}".format(num_expr))
+				dot.node('expr {0}'.format(aux_index),label="expr {0}".format(num_expr))
 				dot.node('lparen {0}'.format(aux_index),label=aux[i].value)
 				dot.edge('superior {0}'.format(aux_index),'lparen {0}'.format(aux_index))
 				dot.edge('superior {0}'.format(aux_index),'expr {0}'.format(aux_index))
