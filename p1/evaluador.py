@@ -212,7 +212,7 @@ class FormulaDot(FormulaBooleana):
 				dot.edge('expr {0}'.format(aux_index),'superior {0}'.format(aux_index))
 				# el nodo superior se conecta con el padre anterior
 				dot.edge('superior {0}'.format(aux_index),'expr {0}'.format(padre[-1]))
-				print(aux_index)
+
 				padre.append(aux_index)
 			
 			# RPAREN tiene que crear dos nodos, el de valor y la expresión, el nodo del valor se conecta a la expr, y el nodo expr se conecta al padre
@@ -222,7 +222,7 @@ class FormulaDot(FormulaBooleana):
 				padre.pop()
 				dot.node('rparen {0}'.format(aux_index),label=aux[i].value)
 				dot.edge('rparen {0}'.format(aux_index),'superior {0}'.format(padre[-1]))
-				print(padre[-1])
+
 				
 				
 				
