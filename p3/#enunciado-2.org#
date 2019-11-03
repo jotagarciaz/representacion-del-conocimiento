@@ -1,6 +1,7 @@
 * Primera pregunta
 
 
+
 Para programar el comportamiento de un robot ROMBLA™ (a partir de ahora se
 llamara el robot), se ha decidido modelar una habitación  
 como una cuadrícula de tres por tres. Dentro de la habitación, hay un
@@ -19,15 +20,47 @@ utilizar la función «trace»).
   #+NAME: goal-test
   #+BEGIN_SRC prolog 
 
+cuadricula(X,Y):-
+	1=<X, X=<5,
+	1=<Y, Y=<5.
+
+
+ir(cuadricula(X,Y),cuadricula(X,Y), cuadricula(X,Y)).
+
+ir(cuadricula(X,Y), cuadricula(XB,YB), cuadricula(XA,YA)):-
+	X = XB,
+	Y > YB,
+	YA is Y-1,
+	XA is X.
+
+ir(cuadricula(X,Y), cuadricula(XB,YB), cuadricula(XA,YA)):-
+	X = XB, 
+	Y < YB,
+	YA is Y+1,
+	XA is X.
+
+ir(cuadricula(X,Y), cuadricula(XB,_YB), cuadricula(XA,YA)):-
+	X > XB,
+	XA is X-1,
+	YA is Y.
+
+ir(cuadricula(X,Y), cuadricula(XB,_YB), cuadricula(XA,YA)):-
+	X < XB,
+	XA = X+1,
+	YA is Y. 
+
 % El estado se compone de tres posiciones, la posicion del robot, de la papelera y la basura.
 estado(cuadricula(1,1),cuadricula(1,2), cuadricula(1,3)).
 
-% El robot puede moverse entre las distintas posiciones.
-accion(estado(Pos1,Pos2, Pos3), ir(Pos1,Pos4), estado(Pos4, Pos2, Pos3)).
-% El robot  puede recoger la basura si esta encima de ella.
-accion(estado(Pos1,Pos2, Pos3), recoger, estado(Pos1, Pos2, cargada)).
 % El robot  puede soltar la basura si esta cargada y estamos al lado de la papelera.
-accion(estado(Pos1,Pos1, cargada), soltar, estado(Pos1, Pos1, en_papelera)).
+accion(estado(Pos1, Pos1, cargada), soltar, estado(Pos1, Pos1, en_papelera)).
+
+% El robot  puede recoger la basura si esta encima de ella.
+accion(estado(Pos1,Pos2, Pos1), recoger, estado(Pos1, Pos2, cargada)).
+
+% El robot puede moverse entre las distintas posiciones.
+accion(estado(Pos1, Pos2, cargada), ir(Pos1, Pos2, Pos3), estado(Pos3, Pos2, cargada)).
+accion(estado(Pos1, Pos2, Pos3), ir(Pos1, Pos3, Pos4), estado(Pos4, Pos2, Pos3)):- ir(Pos1,Pos3,Pos4).
 
 %% Los planes empiezan en un estado y acaban en otro.
 
@@ -35,7 +68,7 @@ plan(Estado, Estado, []).
 plan(Inicio,  Fin, [Accion1|Resto]) :-
     accion(Inicio, Accion1, Estado), plan(Estado,Fin,Resto).
 
-%% :-plan(estado(cuadricula(1,1),cuadricula(1,2),cuadricula(1,3)),estado(_,_,en_papelera),Plan) ,write(Plan).
+:-plan(estado(cuadricula(1,1),cuadricula(1,2),cuadricula(1,3)),estado(_,_,en_papelera),Plan) ,write(Plan).
   #+END_SRC
 
 Suponed que la cuadricula es de cinco por cinco, donde las coordenadas
@@ -77,9 +110,8 @@ horario( [ solares salida 18:15, guarnizo salida 18:35, lierganes salida 19:05, 
 horario( [ solares salida 19:15, guarnizo salida 19:35, lierganes salida 20:05, santander salida 20:20 ]).
 % horario( StartPLace salida StartTime, EndPlace salida EndTime, Horario)
 plan( Inicio,  Destino, [ salida(Inicio), llegada( Siguiente) | Resto]) :-
-    list( Resto), 
     transbordo( Inicio, Siguiente),
-    resto_horario(Siguiente ,Destino, Resto).
+    resto_horario(Siguiente, Destino, Resto).
 
 resto_horario( Sitio, Sitio, []).
 
@@ -90,7 +122,8 @@ resto_horario( Ahora, Destino, [ llegada( Siguiente) | Resto]) :-
 resto_horario( Sitio salida Hora1, Destino, [ esperar( Sitio, Hora1, Hora2) | Resto]) :-
     transbordo( Sitio salida Hora2, _),
     es_antes(Hora1, Hora2), 
-    horario( Sitio salida Hora2, Destino, Resto). 
+    horario( [Sitio salida Hora2, Destino, Resto]). 
+     
 transbordo( Sitio1, Sitio2) :- 
     horario( List),
     concatenar( _, [Sitio1,Sitio2|_ ], List).
@@ -119,7 +152,7 @@ Se pide:
 
 
 #+BEGIN_SRC respuesta
-
+:- plan(santander salida 9:10, solares salida X, Camino).
 #+END_SRC
 
 - Escribir una consulta para que nos
@@ -129,9 +162,10 @@ Se pide:
   mismo día.
 
 #+BEGIN_SRC respuesta
-
+:-plan(beranga salida X, santander salida Y, Resto), plan(santander salida W, beranga salida Z, Resto2), diferencia(Y,W,45).
 #+END_SRC
 
+- Esta consulta da False porque el tiempo que hay que esperar en Santander es 50 minutos. 
 
 
 - ¿Existe alguna forma salir de
@@ -144,6 +178,8 @@ Se pide:
 
 
 #+BEGIN_SRC respuesta
-
+:-plan(santander salida X, beranga salida Y, Resto), plan(beranga salida Z, santander salida W, Resto2), es_antes(Y, Z).
 #+END_SRC
 
+- Funciona porque devuelve False, y devuelve False porque no hay manera de visitar Beranga y volver en el mismo día.
+- Esto se debe a que el autobús que va de Beranga a Santander sale antes de lo que llega el autobús que va de Santander a Beranga.
