@@ -169,7 +169,6 @@ class FormulaDot(FormulaBooleana):
 
 		dot.node('expr 1',label="expr 1")
 		padre = [1]
-
 		for i in range(0,num_nodes):
 			aux_index = i+2
 			# CONST tiene que crear dos nodos, el de valor y la expresión, el nodo del valor se conecta a la expr, y el nodo expr se conecta al padre
@@ -177,14 +176,14 @@ class FormulaDot(FormulaBooleana):
 			if aux[i].type == 'CONST':
 				dot.node('expr {0}'.format(aux_index),label="expr {0}".format(padre[-1]+1))
 				dot.node('const {0}'.format(aux_index),label=aux[i].value)
-				dot.edge('const {0}'.format(aux_index),'expr {0}'.format(aux_index))
-				dot.edge('expr {0}'.format(aux_index),'expr {0}'.format(padre[-1]))
+				dot.edge('expr {0}'.format(aux_index),'const {0}'.format(aux_index))
+				dot.edge('expr {0}'.format(padre[-1]),'expr {0}'.format(aux_index))
 			
 			# AND or OR tiene que crear un nodo valor, el nodo valor se conecta con el padre
 			# dentro baja un nivel, al salir vuelves al nivel superior        
 			elif aux[i].type == 'AND' or aux[i].type == 'OR':
 				dot.node('op {0}'.format(aux_index),label=aux[i].value)
-				dot.edge('op {0}'.format(aux_index),'expr {0}'.format(padre[-1]))
+				dot.edge('expr {0}'.format(padre[-1]),'op {0}'.format(aux_index))
 			
 			# NOT tiene que crear 3 nodos, un nodo valor y dos nodos expresiones, el nodo valor se conecta con el primer nodo de expresion, las expresiones se conectan con el padre
 			# dentro baja dos y un nivel, al salir ha bajado dos niveles (se encuentra en la segunda expresion).
@@ -193,10 +192,10 @@ class FormulaDot(FormulaBooleana):
 				dot.node('superior {0}'.format(aux_index),label="expr {0}".format(padre[-1]+1))
 				dot.node('expr {0}'.format(aux_index),label="expr {0}".format(padre[-1]+1))
 				dot.node('not {0}'.format(aux_index),label=aux[i].value)
-				dot.edge('not {0}'.format(aux_index),'superior {0}'.format(aux_index))
-				dot.edge('expr {0}'.format(aux_index),'superior {0}'.format(aux_index))
+				dot.edge('superior {0}'.format(aux_index),'not {0}'.format(aux_index))
+				dot.edge('superior {0}'.format(aux_index),'expr {0}'.format(aux_index))
 				# el nodo superior se conecta con el padre anterior
-				dot.edge('superior {0}'.format(aux_index),'expr {0}'.format(padre[-1]))
+				dot.edge('expr {0}'.format(padre[-1]),'superior {0}'.format(aux_index))
 				padre.append(aux_index)
 				
 				
@@ -208,10 +207,10 @@ class FormulaDot(FormulaBooleana):
 				dot.node('superior {0}'.format(aux_index),label="expr {0}".format(padre[-1]+1))
 				dot.node('expr {0}'.format(aux_index),label="expr {0}".format(padre[-1]+1))
 				dot.node('lparen {0}'.format(aux_index),label=aux[i].value)
-				dot.edge('lparen {0}'.format(aux_index),'superior {0}'.format(aux_index))
-				dot.edge('expr {0}'.format(aux_index),'superior {0}'.format(aux_index))
+				dot.edge('superior {0}'.format(aux_index),'lparen {0}'.format(aux_index))
+				dot.edge('superior {0}'.format(aux_index),'expr {0}'.format(aux_index))
 				# el nodo superior se conecta con el padre anterior
-				dot.edge('superior {0}'.format(aux_index),'expr {0}'.format(padre[-1]))
+				dot.edge('expr {0}'.format(padre[-1]),'superior {0}'.format(aux_index))
 
 				padre.append(aux_index)
 			
@@ -221,7 +220,7 @@ class FormulaDot(FormulaBooleana):
 				#altura = altura.pop()
 				padre.pop()
 				dot.node('rparen {0}'.format(aux_index),label=aux[i].value)
-				dot.edge('rparen {0}'.format(aux_index),'superior {0}'.format(padre[-1]))
+				dot.edge('superior {0}'.format(padre[-1]),'rparen {0}'.format(aux_index))
 
 				
 				

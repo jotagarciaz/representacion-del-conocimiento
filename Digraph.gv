@@ -4,57 +4,57 @@ digraph {
 	"superior 2" [label="expr 2"]
 	"expr 2" [label="expr 2"]
 	"not 2" [label="¬"]
-	"not 2" -> "superior 2"
-	"expr 2" -> "superior 2"
-	"superior 2" -> "expr 1"
+	"superior 2" -> "not 2"
+	"superior 2" -> "expr 2"
+	"expr 1" -> "superior 2"
 	"expr 3" [label="expr 3"]
 	"const 3" [label=x]
-	"const 3" -> "expr 3"
-	"expr 3" -> "expr 2"
+	"expr 3" -> "const 3"
+	"expr 2" -> "expr 3"
 	"op 4" [label="∨"]
-	"op 4" -> "expr 2"
+	"expr 2" -> "op 4"
 	"superior 5" [label="expr 3"]
 	"expr 5" [label="expr 3"]
 	"not 5" [label="¬"]
-	"not 5" -> "superior 5"
-	"expr 5" -> "superior 5"
-	"superior 5" -> "expr 2"
+	"superior 5" -> "not 5"
+	"superior 5" -> "expr 5"
+	"expr 2" -> "superior 5"
 	"superior 6" [label="expr 6"]
 	"expr 6" [label="expr 6"]
 	"lparen 6" [label="("]
-	"lparen 6" -> "superior 6"
-	"expr 6" -> "superior 6"
-	"superior 6" -> "expr 5"
+	"superior 6" -> "lparen 6"
+	"superior 6" -> "expr 6"
+	"expr 5" -> "superior 6"
 	"expr 7" [label="expr 7"]
 	"const 7" [label=y]
-	"const 7" -> "expr 7"
-	"expr 7" -> "expr 6"
+	"expr 7" -> "const 7"
+	"expr 6" -> "expr 7"
 	"op 8" [label="∧"]
-	"op 8" -> "expr 6"
+	"expr 6" -> "op 8"
 	"superior 9" [label="expr 7"]
 	"expr 9" [label="expr 7"]
 	"lparen 9" [label="("]
-	"lparen 9" -> "superior 9"
-	"expr 9" -> "superior 9"
-	"superior 9" -> "expr 6"
+	"superior 9" -> "lparen 9"
+	"superior 9" -> "expr 9"
+	"expr 6" -> "superior 9"
 	"expr 10" [label="expr 10"]
 	"const 10" [label=x]
-	"const 10" -> "expr 10"
-	"expr 10" -> "expr 9"
+	"expr 10" -> "const 10"
+	"expr 9" -> "expr 10"
 	"op 11" [label="∨"]
-	"op 11" -> "expr 9"
+	"expr 9" -> "op 11"
 	"superior 12" [label="expr 10"]
 	"expr 12" [label="expr 10"]
 	"not 12" [label="¬"]
-	"not 12" -> "superior 12"
-	"expr 12" -> "superior 12"
-	"superior 12" -> "expr 9"
+	"superior 12" -> "not 12"
+	"superior 12" -> "expr 12"
+	"expr 9" -> "superior 12"
 	"expr 13" [label="expr 13"]
 	"const 13" [label=x]
-	"const 13" -> "expr 13"
-	"expr 13" -> "expr 12"
+	"expr 13" -> "const 13"
+	"expr 12" -> "expr 13"
 	"rparen 14" [label=")"]
-	"rparen 14" -> "superior 9"
+	"superior 9" -> "rparen 14"
 	"rparen 15" [label=")"]
-	"rparen 15" -> "superior 6"
+	"superior 6" -> "rparen 15"
 }
