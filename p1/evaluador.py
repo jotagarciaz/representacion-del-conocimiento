@@ -191,13 +191,22 @@ class FormulaDot(FormulaBooleana):
 			# dentro baja dos y un nivel, al salir ha bajado dos niveles (se encuentra en la segunda expresion).
 			elif aux[i].type == 'NOT':
 				#altura = altura.append(altura[-1]+2)
-				dot.node('superior {0}'.format(aux_index),label="expr {0}".format(num_expr))
-				dot.node('expr {0}'.format(aux_index),label="expr {0}".format(num_expr))
-				dot.node('not {0}'.format(aux_index),label=aux[i].value)
-				dot.edge('superior {0}'.format(aux_index),'not {0}'.format(aux_index))
-				dot.edge('superior {0}'.format(aux_index),'expr {0}'.format(aux_index))
-				# el nodo superior se conecta con el padre anterior
-				dot.edge('expr {0}'.format(padre[-1]),'superior {0}'.format(aux_index))
+				if aux[i+1].type == 'CONST' or  aux[i+1].type == 'LPAREN' :
+				
+					dot.node('expr {0}'.format(aux_index),label="expr {0}".format(num_expr))
+					dot.node('not {0}'.format(aux_index),label=aux[i].value)
+					dot.edge('expr {0}'.format(aux_index),'not {0}'.format(aux_index))
+					
+					# el nodo superior se conecta con el padre anterior
+					dot.edge('expr {0}'.format(padre[-1]),'expr {0}'.format(aux_index))
+				else:
+					dot.node('superior {0}'.format(aux_index),label="expr {0}".format(num_expr))
+					dot.node('expr {0}'.format(aux_index),label="expr {0}".format(num_expr))
+					dot.node('not {0}'.format(aux_index),label=aux[i].value)
+					dot.edge('superior {0}'.format(aux_index),'not {0}'.format(aux_index))
+					dot.edge('superior {0}'.format(aux_index),'expr {0}'.format(aux_index))
+					# el nodo superior se conecta con el padre anterior
+					dot.edge('expr {0}'.format(padre[-1]),'superior {0}'.format(aux_index))
 				padre.append(aux_index)
 				
 				
@@ -237,6 +246,6 @@ class FormulaDot(FormulaBooleana):
 e = FormulaDot()
 
 #print(list(lista_tokens(master_pattern,'¬ x ∨ ¬(y ∧ x)' )))
-print(e.parse('¬ x ∨ ¬(y ∧ (x ∨ ¬ x))',{'x':True , 'y':False}))
+print(e.parse('x ∨ ¬(y ∧ (x ∨ ¬ x))',{'x':True , 'y':False}))
 
 

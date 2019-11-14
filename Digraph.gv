@@ -1,60 +1,50 @@
 // FormulaDot
 digraph {
 	"expr 1" [label="expr 1"]
-	"superior 2" [label="expr 2"]
 	"expr 2" [label="expr 2"]
-	"not 2" [label="¬"]
-	"superior 2" -> "not 2"
-	"superior 2" -> "expr 2"
-	"expr 1" -> "superior 2"
-	"expr 3" [label="expr 2"]
-	"const 3" [label=x]
-	"expr 3" -> "const 3"
-	"expr 2" -> "expr 3"
-	"op 4" [label="∨"]
-	"expr 2" -> "op 4"
+	"const 2" [label=x]
+	"expr 2" -> "const 2"
+	"expr 1" -> "expr 2"
+	"op 3" [label="∨"]
+	"expr 1" -> "op 3"
+	"expr 4" [label="expr 3"]
+	"not 4" [label="¬"]
+	"expr 4" -> "not 4"
+	"expr 1" -> "expr 4"
 	"superior 5" [label="expr 3"]
 	"expr 5" [label="expr 3"]
-	"not 5" [label="¬"]
-	"superior 5" -> "not 5"
+	"lparen 5" [label="("]
+	"superior 5" -> "lparen 5"
 	"superior 5" -> "expr 5"
-	"expr 2" -> "superior 5"
-	"superior 6" [label="expr 3"]
+	"expr 4" -> "superior 5"
 	"expr 6" [label="expr 3"]
-	"lparen 6" [label="("]
-	"superior 6" -> "lparen 6"
-	"superior 6" -> "expr 6"
-	"expr 5" -> "superior 6"
-	"expr 7" [label="expr 3"]
-	"const 7" [label=y]
-	"expr 7" -> "const 7"
-	"expr 6" -> "expr 7"
-	"op 8" [label="∧"]
-	"expr 6" -> "op 8"
-	"superior 9" [label="expr 4"]
+	"const 6" [label=y]
+	"expr 6" -> "const 6"
+	"expr 5" -> "expr 6"
+	"op 7" [label="∧"]
+	"expr 5" -> "op 7"
+	"superior 8" [label="expr 4"]
+	"expr 8" [label="expr 4"]
+	"lparen 8" [label="("]
+	"superior 8" -> "lparen 8"
+	"superior 8" -> "expr 8"
+	"expr 5" -> "superior 8"
 	"expr 9" [label="expr 4"]
-	"lparen 9" [label="("]
-	"superior 9" -> "lparen 9"
-	"superior 9" -> "expr 9"
-	"expr 6" -> "superior 9"
-	"expr 10" [label="expr 4"]
-	"const 10" [label=x]
-	"expr 10" -> "const 10"
-	"expr 9" -> "expr 10"
-	"op 11" [label="∨"]
-	"expr 9" -> "op 11"
-	"superior 12" [label="expr 5"]
+	"const 9" [label=x]
+	"expr 9" -> "const 9"
+	"expr 8" -> "expr 9"
+	"op 10" [label="∨"]
+	"expr 8" -> "op 10"
+	"expr 11" [label="expr 5"]
+	"not 11" [label="¬"]
+	"expr 11" -> "not 11"
+	"expr 8" -> "expr 11"
 	"expr 12" [label="expr 5"]
-	"not 12" [label="¬"]
-	"superior 12" -> "not 12"
-	"superior 12" -> "expr 12"
-	"expr 9" -> "superior 12"
-	"expr 13" [label="expr 5"]
-	"const 13" [label=x]
-	"expr 13" -> "const 13"
-	"expr 12" -> "expr 13"
+	"const 12" [label=x]
+	"expr 12" -> "const 12"
+	"expr 11" -> "expr 12"
+	"rparen 13" [label=")"]
+	"superior 8" -> "rparen 13"
 	"rparen 14" [label=")"]
-	"superior 9" -> "rparen 14"
-	"rparen 15" [label=")"]
-	"superior 6" -> "rparen 15"
+	"superior 5" -> "rparen 14"
 }
