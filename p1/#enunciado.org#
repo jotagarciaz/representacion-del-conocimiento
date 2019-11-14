@@ -6,7 +6,6 @@
 
 
 
-
 El concepto de «Literate Programming» es un paradigma en programación
 introducido por Donald Knuth, donde el código y la explicación en
 lenguaje natural están intercaladas permitiendo así una legibilidad
@@ -180,7 +179,6 @@ A continuación, damos las tareas a realizar.
 * Primera pregunta
 
 
-
 Crear una clase hija de **FormulaBooleana**, llamada **FormulaGeneral**, de forma que se admita el
 operador ¬ en la formula booleana.
 
@@ -214,7 +212,7 @@ class FormulaGeneral(FormulaBooleana):
 e = FormulaGeneral()
 print(e.parse('¬ x ∨ ¬(y ∧ x)',{'x':True , 'y':False}))
 
-#+End_SRC
+#+END_SRC
 
 #+RESULTS:
 : False
@@ -223,7 +221,6 @@ print(e.parse('¬ x ∨ ¬(y ∧ x)',{'x':True , 'y':False}))
 
 
 * Segunda pregunta
-
 
 
 Crear un método que, dada una formula booleana, devuelva si es
@@ -263,28 +260,101 @@ digraph g{
 
 #+BEGIN_SRC python :session prueba :results output
 
+from graphviz import Digraph
 
 class FormulaDot(FormulaBooleana):
-    
-    def clausula(self):
-        '''
-        clausula : negacion | ¬ negacion
-        '''
-         if self._acepta('LPAREN'):
-            formula_value = self.formula()
-            self._espera('RPAREN')
-            conj_value = formula_value
-        elif self._acepta('CONST'):
-            conj_value =  self.asig[self.current_token.value]
-        if self._acepta('NOT'):
-            formula_value = self.formula()
-            conj_value = formula_value
-            conj_value = not conj_value
-        return conj_value
+	def parse(self, text, asig):
+		self.tokens = lista_tokens(master_pattern, text)
+		self.current_token = None
+		self.next_token = None
+		self.asig = asig
+		return self.formula()
+	
+	def clausula(self):
+		'''
+		clausula : negacion | ¬ negacion
+		'''
+
+		dot = Digraph(comment='FormulaDot',format='png')
 
 
-e = FormulaGeneral()
-print(e.parse('¬ x ∨ ¬(y ∧ x)',{'x':True , 'y':False}))
+		aux = list(self.tokens)
+		print(aux)
+		num_nodes = len(aux)
+
+		dot.node('expr 1',label="expr 1")
+		padre = [1]
+		num_expr = padre[-1]+1
+		for i in range(0,num_nodes):
+			aux_index = i+2
+			# CONST tiene que crear dos nodos, el de valor y la expresión, el nodo del valor se conecta a la expr, y el nodo expr se conecta al padre
+			# dentro baja dos niveles, vuelves al nivel superior
+			if aux[i].type == 'CONST':
+				dot.node('expr {0}'.format(aux_index),label="expr {0}".format(num_expr))
+				dot.node('const {0}'.format(aux_index),label=aux[i].value)
+				dot.edge('expr {0}'.format(aux_index),'const {0}'.format(aux_index))
+				dot.edge('expr {0}'.format(padre[-1]),'expr {0}'.format(aux_index))
+			
+			# AND or OR tiene que crear un nodo valor, el nodo valor se conecta con el padre
+			# dentro baja un nivel, al salir vuelves al nivel superior        
+			elif aux[i].type == 'AND' or aux[i].type == 'OR':
+				num_expr += 1
+				dot.node('op {0}'.format(aux_index),label=aux[i].value)
+				dot.edge('expr {0}'.format(padre[-1]),'op {0}'.format(aux_index))
+			
+			# NOT tiene que crear 3 nodos, un nodo valor y dos nodos expresiones, el nodo valor se conecta con el primer nodo de expresion, las expresiones se conectan con el padre
+			# dentro baja dos y un nivel, al salir ha bajado dos niveles (se encuentra en la segunda expresion).
+			elif aux[i].type == 'NOT':
+				#altura = altura.append(altura[-1]+2)
+				if aux[i+1].type == 'CONST' or  aux[i+1].type == 'LPAREN' :
+				
+					dot.node('expr {0}'.format(aux_index),label="expr {0}".format(num_expr))
+					dot.node('not {0}'.format(aux_index),label=aux[i].value)
+					dot.edge('expr {0}'.format(aux_index),'not {0}'.format(aux_index))
+					
+					# el nodo superior se conecta con el padre anterior
+					dot.edge('expr {0}'.format(padre[-1]),'expr {0}'.format(aux_index))
+				else:
+					dot.node('superior {0}'.format(aux_index),label="expr {0}".format(num_expr))
+					dot.node('expr {0}'.format(aux_index),label="expr {0}".format(num_expr))
+					dot.node('not {0}'.format(aux_index),label=aux[i].value)
+					dot.edge('superior {0}'.format(aux_index),'not {0}'.format(aux_index))
+					dot.edge('superior {0}'.format(aux_index),'expr {0}'.format(aux_index))
+					# el nodo superior se conecta con el padre anterior
+					dot.edge('expr {0}'.format(padre[-1]),'superior {0}'.format(aux_index))
+				padre.append(aux_index)
+				
+				
+			
+			# LPAREN tiene que crear 3 nodos, un nodo valor y dos nodos expresiones, el nodo valor se conecta con el primer nodo de expresion, las expresiones se conectan con el padre
+			# dentro baja dos y un nivel, al salir ha bajado dos niveles (se encuentra en la segunda expresion).
+			elif aux[i].type == 'LPAREN':
+				#altura = altura.append(altura[-1]+2)
+				dot.node('superior {0}'.format(aux_index),label="expr {0}".format(num_expr))
+				dot.node('expr {0}'.format(aux_index),label="expr {0}".format(num_expr))
+				dot.node('lparen {0}'.format(aux_index),label=aux[i].value)
+				dot.edge('superior {0}'.format(aux_index),'lparen {0}'.format(aux_index))
+				dot.edge('superior {0}'.format(aux_index),'expr {0}'.format(aux_index))
+				# el nodo superior se conecta con el padre anterior
+				dot.edge('expr {0}'.format(padre[-1]),'superior {0}'.format(aux_index))
+
+				padre.append(aux_index)
+			
+			# RPAREN tiene que crear dos nodos, el de valor y la expresión, el nodo del valor se conecta a la expr, y el nodo expr se conecta al padre
+			# entra bajando un nivel, al salir vuelves al nivel en el que estabas
+			elif aux[i].type == 'RPAREN':
+				#altura = altura.pop()
+				padre.pop()
+				dot.node('rparen {0}'.format(aux_index),label=aux[i].value)
+				dot.edge('superior {0}'.format(padre[-1]),'rparen {0}'.format(aux_index))
+
+		
+		dot.render(view=True)
+
+e = FormulaDot()
+
+#print(list(lista_tokens(master_pattern,'¬ x ∨ ¬(y ∧ x)' )))
+print(e.parse('x ∨ ¬(y ∧ (x ∨ ¬ x))',{'x':True , 'y':False}))
 
 #+END_SRC
 
