@@ -40,7 +40,7 @@ Explicar la razón en el cuadro de abajo.
 #+BEGIN_VERBATIM
 Respuesta:
 El código no funciona porque, al no estar defininda la relación entre (X1,Y1) y (X2,Y2), 
-la consulta siempre entra en el primer método (X is X1+1) y suma 1 a X hasta que alcanza
+la consulta siempre entra en el primer método (X is X1+1) y suma 1 a X1 hasta que alcanza
 X2 o hasta que se acabe el stack.
 #+END_VERBATIM
 
