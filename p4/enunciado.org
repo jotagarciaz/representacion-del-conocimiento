@@ -1,0 +1,182 @@
+#+title: Las ciudades hipodámico
+
+El plano hipodámico o trazado en damero es un planteamiento que aboga por 
+la construcción de calles y carreteras paralelas dos a dos o
+cruzándose en un ángulo de noventa grados entre sí. Uno de los
+prototipos de esta forma de planificación urbanista es  «New York», ya
+que las calles de Manhattan siguen este patrón. 
+
+Sabiendo esto, se ha decidido implementar una base de representación
+del conocimiento para encontrar caminos mínimos en una cuadrícula, que 
+representa  las calles de Manhattan.
+
+Para ello se da el siguiente sistema, que contiene errores y que hay
+que corregir:
+#+BEGIN_SRC prolog
+
+manhattan(Pos1,Pos1,[]).
+
+
+
+manhattan(cuadricula(X1,Y1),cuadricula(X2,Y2),[cuadricula(X,Y)|L]):- X is X1+1,
+							      Y is Y1,
+							      manhattan(cuadricula(X,Y),cuadricula(X2,Y2),L).
+manhattan(cuadricula(X1,Y1),cuadricula(X2,Y2),[cuadricula(X,Y)|L]):- X is X1-1,
+							      Y is Y1,
+							      manhattan(cuadricula(X,Y),cuadricula(X2,Y2),L).
+manhattan(cuadricula(X1,Y1),cuadricula(X2,Y2),[cuadricula(X,Y)|L]):- X is X1,
+							      Y is Y1+1,
+							      manhattan(cuadricula(X,Y),cuadricula(X2,Y2),L).
+manhattan(cuadricula(X1,Y1),cuadricula(X2,Y2),[cuadricula(X,Y)|L]):- X is X1,
+							      Y is Y1-1,
+							     manhattan(cuadricula(X,Y),cuadricula(X2,Y2),L).
+
+
+#+END_SRC
+* Primera pregunta
+
+¿Por qué el código no funciona? 
+Explicar la razón en el cuadro de abajo.
+#+BEGIN_VERBATIM
+Respuesta:
+El código no funciona porque, al no estar defininda la relación entre (X1,Y1) y (X2,Y2), 
+la consulta siempre entra en el primer método (X is X1+1) y suma 1 a X hasta que alcanza
+X2 o hasta que se acabe el stack.
+#+END_VERBATIM
+
+Los ingenieros dicen que el código es útil porque pueden hacer algunas cosas, como consultar
+todos los posibles caminos dando dos saltos.
+
+Escribir la consulta que hay que hacer y decir cuantos caminos hay
+desde la cuadricula 3,3 que se puede llegar en dos saltos.
+
+#+BEGIN_VERBATIM
+Respuesta:
+:-manhattan(cuadricula(3,3), cuadricula(X,Y), [cuadricula(_,_), cuadricula(X,Y)]).
+#+END_VERBATIM
+
+En la respuesta anterior, se tenían en cuenta ciclos, esto es una de
+las «soluciones»:
+[cuadrícula(3,3), cuadrícula(4,3),cuadrícula(3,3)]
+Escribir una consulta que devuelva los caminos que no sean ciclos.
+#+BEGIN_VERBATIM
+Respuesta:
+:-manhattan(cuadricula(3,3), cuadricula(X,Y), [cuadricula(_,_), cuadricula(X,Y)]), (X=\=3; Y=\=3).
+#+END_VERBATIM
+
+
+* Segunda pregunta
+
+
+Ante la evidencia 
+Los ingenieros presentes deciden añadir una clausula de Horn  para
+testear si la cuadrícula es válida, ya que Manhattan se representa
+como una cuadrícula 5 por 5.
+
+#+BEGIN_SRC prolog
+cuadricula(X,Y):-
+	0<X,X<6,
+	0<Y,Y<6,
+	(X=\=3;Y=\=2),
+	(X=\=2;Y=\=3).
+	
+manhattan(cuadricula(X,Y),cuadricula(X,Y),[]).
+
+manhattan(cuadricula(X1,Y1),cuadricula(X2,Y2),[cuadricula(X,Y)|L]):- 
+	X1 < X2,
+	X is X1+1,
+	Y is Y1,
+	cuadricula(X,Y),
+	manhattan(cuadricula(X,Y),cuadricula(X2,Y2),L).
+manhattan(cuadricula(X1,Y1),cuadricula(X2,Y2),[cuadricula(X,Y)|L]):- 
+	X1 > X2,
+	X is X1-1,
+	Y is Y1,
+	cuadricula(X,Y),
+	manhattan(cuadricula(X,Y),cuadricula(X2,Y2),L).
+manhattan(cuadricula(X1,Y1),cuadricula(X2,Y2),[cuadricula(X,Y)|L]):- 
+	Y1 < Y2,
+	X is X1,
+	Y is Y1+1,
+	cuadricula(X,Y),
+	manhattan(cuadricula(X,Y),cuadricula(X2,Y2),L).
+manhattan(cuadricula(X1,Y1),cuadricula(X2,Y2),[cuadricula(X,Y)|L]):- 
+	Y1 > Y2,
+	X is X1,
+	Y is Y1-1,
+	cuadricula(X,Y),
+	manhattan(cuadricula(X,Y),cuadricula(X2,Y2),L).
+
+
+#+End_SRC
+
+Aún así el programa no funciona,  ¿qué
+consultas no devuelven una respuesta correcta? ¿cual es la razón esta vez?
+
+#+BEGIN_VERBATIM
+Respuesta:
+Las consultas en las que X1 sea mayor que X2 e Y1 no sea igual que Y2 no devuelven
+una respuesta correcta, porque no se establece relación entre las variables, como 
+en la primera pregunta. 
+También fallan las consultas donde X1 < X2 e Y1 = Y2 si se les pide encontrar otro 
+camino, porque entran en un ciclo infinito.
+#+END_VERBATIM
+
+Corregir el programa para que devuelva el resultado correcto para
+todas las consultas que pregunten el camino más corto desde dos
+cuadriculas, como por ejemplo:
+
+#+BEGIN_SRC prolog
+manhattan(cuadricula(1,2), cuadricula(4,1),L).
+#+END_SRC
+
+Supongamos que no se puede pasar por las casillas (3,2) y la casilla (2,3).
+¿Como se puede modificar el código prolog para que funcione?
+
+#+BEGIN_VERBATIM
+Respuesta:
+Hemos corregido el código en el SRC de arriba, donde estaba el de ejemplo.
+Se puede modificar el código para que funcione evitando esas casillas 
+añadiendo al predicado "cuadricula(X,Y)" las dos últimas líneas:
+(X=\=3;Y=\=2),
+(X=\=2;Y=\=3).
+#+END_VERBATIM
+
+Como no estábamos seguros de si debíamos o no corregir el primer código, 
+lo hemos dejado intacto y añadimos aquí el código corregido para el primer apartado:
+#+BEGIN_SRC prolog
+cuadricula(X,Y):-
+	1=<X, X=<5,
+	1=<Y, Y=<5.
+
+manhattan(cuadricula(X,Y),cuadricula(X,Y),[]).
+
+manhattan(cuadricula(X1,Y1),cuadricula(X2,Y2),[cuadricula(X,Y)|L]):- 
+	cuadricula(X1,Y1),
+	cuadricula(X2,Y2),
+	X1 < X2,
+	X is X1+1,
+	Y is Y1,
+	manhattan(cuadricula(X,Y),cuadricula(X2,Y2),L).
+manhattan(cuadricula(X1,Y1),cuadricula(X2,Y2),[cuadricula(X,Y)|L]):- 
+	cuadricula(X1,Y1),
+	cuadricula(X2,Y2),
+	X1 > X2,
+	X is X1-1,
+	Y is Y1,
+	manhattan(cuadricula(X,Y),cuadricula(X2,Y2),L).
+manhattan(cuadricula(X1,Y1),cuadricula(X2,Y2),[cuadricula(X,Y)|L]):- 
+	cuadricula(X1,Y1),
+	cuadricula(X2,Y2),
+	Y1 < Y2,
+	X is X1,
+	Y is Y1+1,
+	manhattan(cuadricula(X,Y),cuadricula(X2,Y2),L).
+manhattan(cuadricula(X1,Y1),cuadricula(X2,Y2),[cuadricula(X,Y)|L]):-
+	cuadricula(X1,Y1),
+	cuadricula(X2,Y2),
+	Y1 > Y2,
+	X is X1,
+	Y is Y1-1,
+	manhattan(cuadricula(X,Y),cuadricula(X2,Y2),L).
+#+END_SRC
