@@ -1,0 +1,117 @@
+#+title: El operador cut
+
+El operador cut es utilizado para controlar el flujo de un programa,
+restringe el «backtracking» y se utiliza también para replicar
+estructuras «if-else if-else»
+Su significado es, que una vez asignadas variables de forma que un
+predicado sea cierto, entonces se comprueba la satisfacción de los
+objetivos a la parte derecha. En esta práctica, se pedirán diferentes
+ejercicios, todos ellos involucran el operador cut. 
+
+* Primera pregunta
+
+La forma de calcular la potencia de un número puede ser dado en 
+pseudo código  del siguiente predicado 
+
+potencia(X,Y,Z)
+
+- Cualquier número elevado a cero tiene que dar Z=1.
+- Si y es par entonces dividir el exponente entre dos y elevar la base
+  al cuadrado.
+- En otro caso (¡no hay que volver a testear y!), se calcula la potencia
+  de X a la Y-1 y el resultado se multiplica por X.
+
+Escribir este programa en Prolog.
+
+#+BEGIN_SRC prolog
+
+#+END_SRC
+* Segunda pregunta
+
+Se supone dado el siguiente programa, escrito en Prolog para controlar 
+las alertas  por viento elevado.
+
+#+BEGIN_SRC prolog :session pruebaf
+alerta(X,verde):- X<20.
+alerta(X,blanco):- 19<X, X<50.
+alerta(X,naranja):- 49<X, X<80. 
+alerta(X,rojo):- 79<X.
+#+END_SRC
+
+
+Ante la consulta de un usuario 
+alerta(80,A), A=verde, 
+
+¿cuantas comprobaciones hace el programa?
+
+Escribir la respuesta dentro del bloque VERBATIM.
+
+#+BEGIN_VERBATIM
+
+#+END_VERBATIM
+
+
+Se sugiere la siguiente mejora, utilizando el operador cut.
+
+#+BEGIN_SRC prolog :session pruebaf
+alerta(X,verde):- X<20,!.
+alerta(X,blanco):- X<50,! .
+alerta(X,naranja):- X<80, !. 
+alerta(X,rojo).
+#+END_SRC
+
+Calcular  el número de comprobaciones para la misma consulta
+alerta(80,A).
+
+
+Escribir la respuesta dentro del bloque VERBATIM.
+#+BEGIN_VERBATIM
+#+END_VERBATIM
+
+¿Qué ocurre con el código sin el operador cut? 
+Es decir, ¿por qué es incorrecto este código?
+#+BEGIN_SRC prolog :session pruebaf
+alerta(X,verde):- X<20.
+alerta(X,blanco):- X<50 .
+falerta(X,naranja):- X<80. 
+alerta(X,rojo).
+#+END_SRC
+
+Escribir la respuesta dentro del bloque VERBATIM.
+#+BEGIN_VERBATIM
+
+#+END_VERBATIM
+* Tercera pregunta
+Supongamos que tenemos una base de datos con 
+tenistas aficionados y quienes han ganado a quien.
+
+#+BEGIN_SRC prolog :session pruebaf
+gana(alberto, pepe).
+gana(jaime, pepe).
+gana(pepe, emilia).
+gana(alberto, emilia).
+gana(alberto, jaime).
+#+END_SRC 
+
+Se desea implementar utilizando el operador cut (y no el operador not)
+las siguientes reglas:
+
+- Alguien es un luchador si gana a alguien y pierde contra alguien.
+- Alguien es un ganador si ha ganado contra todos los que ha jugado y
+  no ha perdido contra nadie.
+- Alguien es relajado si pierde contra todos los que ha jugado
+
+Completad el código en el bloque
+#+BEGIN_SRC prolog :session pruebaf
+clase(X,luchador):- %completad!
+clase(X,ganador):- %completad!
+clase(X,relajado):- %completad!
+#+END_SRC
+
+
+Añadir consultas para comprobar a que clase pertenece alberto, así como una consulta para comprobar quienes pertenecen a la clase luchador. Explicar para que consultas funcionará correctamente el código.
+
+Escribir la respuesta dentro del bloque VERBATIM.
+#+BEGIN_VERBATIM
+
+#+END_VERBATIM
