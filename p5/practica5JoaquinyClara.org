@@ -24,7 +24,18 @@ potencia(X,Y,Z)
 Escribir este programa en Prolog.
 
 #+BEGIN_SRC prolog
+potencia(_X, 0, 1).
 
+potencia(X,Y,Z):-
+	0 is Y mod 2, 
+	X1 is X*X,
+	Y1 is Y/2,
+	potencia(X1,Y1,Z).
+
+potencia(X,Y,Z):-
+	Y1 is Y-1,
+	potencia(X,Y1,Z1),
+	Z is Z1*X.
 #+END_SRC
 * Segunda pregunta
 
@@ -47,7 +58,9 @@ alerta(80,A), A=verde,
 Escribir la respuesta dentro del bloque VERBATIM.
 
 #+BEGIN_VERBATIM
-
+Entendiendo una comprobación como comprobar que un predicado se cumple, 
+haciendo Call alerta(X,Y), Prolog hace cuatro comprobaciones antes de devolver falso, 
+pasando por los cuatro predicados de alerta disponibles.
 #+END_VERBATIM
 
 
@@ -66,6 +79,11 @@ alerta(80,A).
 
 Escribir la respuesta dentro del bloque VERBATIM.
 #+BEGIN_VERBATIM
+Como hemos dicho antes, entendiendo una comprobación como comprobar que un predicado se cumple, 
+haciendo Call alerta(X,Y), Prolog hace cuatro comprobaciones antes de devolver falso, 
+pasando por los cuatro predicados de alerta disponibles. 
+Esto se debe a que Prolog tiene que comprobar que X sea 80 para algún caso, 
+y debido a eso ha de entrar en todos los casos.
 #+END_VERBATIM
 
 ¿Qué ocurre con el código sin el operador cut? 
@@ -79,8 +97,14 @@ alerta(X,rojo).
 
 Escribir la respuesta dentro del bloque VERBATIM.
 #+BEGIN_VERBATIM
-
+En este caso, el código es incorrecto, 
+ya que al intentar discernir qué color se corresponde 
+con el valor de X, se devuelven todos los que comprendan valores mayores que X, 
+sin delimitar un rango inferior. Sin embargo, al tratarse de alertas de vientos, 
+a una X solamente debería corresponderle un color, 
+y por tanto a este código le faltan los límites inferiores de cada color.
 #+END_VERBATIM
+
 * Tercera pregunta
 Supongamos que tenemos una base de datos con 
 tenistas aficionados y quienes han ganado a quien.
@@ -103,15 +127,31 @@ las siguientes reglas:
 
 Completad el código en el bloque
 #+BEGIN_SRC prolog :session pruebaf
-clase(X,luchador):- %completad!
-clase(X,ganador):- %completad!
-clase(X,relajado):- %completad!
+clase(X,luchador):- 
+	gana(X,_),
+	gana(_,X), !.
+clase(X,ganador):- 
+	gana(X,_), !.
+clase(X,relajado).
 #+END_SRC
 
 
-Añadir consultas para comprobar a que clase pertenece alberto, así como una consulta para comprobar quienes pertenecen a la clase luchador. Explicar para que consultas funcionará correctamente el código.
+Añadir consultas para comprobar a que clase pertenece alberto, 
+así como una consulta para comprobar quienes pertenecen a la clase luchador. 
+Explicar para que consultas funcionará correctamente el código.
 
 Escribir la respuesta dentro del bloque VERBATIM.
 #+BEGIN_VERBATIM
+Consulta para comprobar a qué clase pertenece Alberto:
+clase(alberto,X).
 
+Consulta para comprobar quiénes pertenecen a la clase luchador:
+clase(X,luchador).
+
+Para qué consultas funciona este código:
+Este código funciona para consultas como las anteriores, 
+en las que se pregunta uno de los dos aspectos basado en el otro.
+Si se quiere saber si cierta persona pertenece a cierta clase, 
+el código no funciona correctamente porque todos pertenecen a la clase relajado, 
+y los luchadores también pertenecen a la clase ganador.
 #+END_VERBATIM
