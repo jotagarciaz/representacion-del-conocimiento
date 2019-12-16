@@ -29,7 +29,7 @@
   (assert (estado))
   (assert (caracter ?siguiente))
   (assert (estados q0 $?otros_estados))
-  (assert (entrada $?otros "1"))
+  (assert (entrada $?otros))
   (printout t "q01" crlf)
   (printout t "q0 " $?otros_estados crlf)
 )
@@ -119,7 +119,7 @@
   (assert (estado))
   (assert (caracter ?siguiente))
   (assert (estados q2 $?otros_estados))
-  (assert (entrada $?otros "1"))
+  (assert (entrada $?otros ))
   (printout t "q21" crlf)
   (printout t "q2 " $?otros_estados crlf)
 )
@@ -152,7 +152,7 @@
   ?estados <-(estados $?otros_estados)
   ?simbolo_actual <-(caracter "$")
   ?estados_finales <-(estados_finales $?estados_finales_otros)
-  ?cinta <-(entrada  ?siguiente ?siguiente_dos $?otros)
+  ?cinta <-(entrada  ?siguiente  $?otros)
  =>
   (retract ?simbolo_actual)
   (retract ?estados)
@@ -161,7 +161,7 @@
   (assert (estado))
   (retract ?estados_finales)
   (assert (estados_finales $?estados_finales_otros q2))
-  (assert (caracter ?siguiente_dos))
+  (assert (caracter ?siguiente))
   (assert (estados $?otros_estados))
   (assert (entrada $?otros "$"))
   (printout t "q2$" crlf)
@@ -181,11 +181,12 @@
 
 (defrule final_state_q0
 	?estado_actual <-(estado q0)
-	?estados <- (estados)
+	?estados <- (estados ?otros)
 	?simbolo_actual <-(caracter "$")
 	?estados_finales <-(estados_finales $?final_states)
 	?cinta <-(entrada)
 =>
+  (retract ?estados)
 	(retract ?simbolo_actual)
 	(retract ?estados_finales)
 	(assert (estados_finales $?final_states q0))
@@ -194,11 +195,12 @@
 
 (defrule final_state_q2
 	?estado_actual <-(estado q2)
-	?estados <- (estados)
+	?estados <- (estados ?otros)
 	?simbolo_actual <-(caracter "$")
 	?estados_finales <-(estados_finales $?final_states)
 	?cinta <-(entrada)
 =>
+  (retract ?estados)
 	(retract ?simbolo_actual)
 	(retract ?estados_finales)
 	(assert (estados_finales $?final_states q2))

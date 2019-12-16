@@ -5,7 +5,7 @@ cada vez que se lee un uno se quita el uno del carrete, ya que no hacen cambios 
 cada vez que se lee un 0 se tienen dos casos:
 
 si hay un estado q0: 
-    se crea el estado q0 y q1, se copia el 0 despues del final.
+    se crea el estado q0 y q1, se copia el 0 despues del final de carrete.
     una vez leidos todos, copiamos el caracter de final al final de la lista
     saltamos a leer el siguiente estado (el cual será q1)
 
