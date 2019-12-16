@@ -181,7 +181,7 @@
 
 (defrule final_state_q0
 	?estado_actual <-(estado q0)
-	?estados <- (estados ?otros)
+	?estados <- (estados $?otros)
 	?simbolo_actual <-(caracter "$")
 	?estados_finales <-(estados_finales $?final_states)
 	?cinta <-(entrada)
@@ -195,7 +195,7 @@
 
 (defrule final_state_q2
 	?estado_actual <-(estado q2)
-	?estados <- (estados ?otros)
+	?estados <- (estados $?otros)
 	?simbolo_actual <-(caracter "$")
 	?estados_finales <-(estados_finales $?final_states)
 	?cinta <-(entrada)
