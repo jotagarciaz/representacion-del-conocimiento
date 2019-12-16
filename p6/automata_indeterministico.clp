@@ -214,6 +214,8 @@
 )
 
 
+; asserts de prueba
 ; (assert (estado q0))
-; (assert (caracter "0"))
-; (assert (entrada "0" "c"))
+; (assert (estados ))
+; (assert (caracter "0" ))
+; (assert (entrada "1" "1" "0" "0" "1" "$" ))
