@@ -214,6 +214,7 @@
 )
 
 
+
 ; asserts de prueba
 ; (assert (estado q0))
 ; (assert (estados_finales ))

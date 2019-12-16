@@ -1,0 +1,17 @@
+Lo que hay que hacer es lo siguiente:
+
+cada vez que se lee un uno se quita el uno del carrete, ya que no hacen cambios en el sistema.
+
+cada vez que se lee un 0 se tienen dos casos:
+
+si hay un estado q0: 
+    se crea el estado q0 y q1, se copia el 0 despues del final.
+    una vez leidos todos, copiamos el caracter de final al final de la lista
+    saltamos a leer el siguiente estado (el cual será q1)
+
+si no hay estado q0:
+    se recorre el carrete aplicandole los cambios al primer q1 (con un solo cero ya llega al estado final)
+    una vez aplicado los cambios se borra el primer cero del carrete y se coge el siguiente estado de la lista 
+    que volvera a ser q1
+
+    si el carrete esta vacio hemos terminado.
