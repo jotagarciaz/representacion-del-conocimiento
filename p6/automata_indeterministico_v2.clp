@@ -35,14 +35,14 @@
 )
 
 (defrule recorrer_estados
-  ?estado_actual <-(estado )
+  ?estado_actual <-(estado)
   ?estados <-(estados ?siguiente_estado $?otros_estados)
  =>
   (retract ?estado_actual)
   (retract ?estados)
   (assert (estado ?siguiente_estado))
   (assert (estados $?otros_estados)
-)
+  )
 
 
 ; asserts de prueba
