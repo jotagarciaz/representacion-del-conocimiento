@@ -1,0 +1,6 @@
+(assert (q0 1 q1))
+(assert (q0 0 q0))
+(assert (q1 1 q2))
+(assert (q1 0 q1))
+(assert (q2 0 q0))
+(assert (q2 1 q0))
