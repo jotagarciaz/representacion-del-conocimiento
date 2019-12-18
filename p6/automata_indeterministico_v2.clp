@@ -41,8 +41,8 @@
   (retract ?estado_actual)
   (retract ?estados)
   (assert (estado ?siguiente_estado))
-  (assert (estados $?otros_estados)
-  )
+  (assert (estados $?otros_estados))
+)
 
 
 ; asserts de prueba
