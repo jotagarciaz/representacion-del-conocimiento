@@ -13,21 +13,36 @@
   ?simbolo <-(caracter ?simbolo_actual)
   ?cinta <-(entrada ?siguiente_simbolo $?otros)
   ?trans <-(trans ?estado_actual ?simbolo_actual ?siguiente_estado $?otros_estados)
-  ?final <- (final $?estado_final)
-  ?otros_finales_ <- (estados_finales $?otros_finales)
  =>
   (retract ?simbolo)
   (retract ?cinta)
   (retract ?estado)
   (retract ?trans)
-  (retract ?otros_finales_)
   (assert (estado ?siguiente_estado))
+  (assert (estados $?otros_estados))
   (assert (caracter ?siguiente_simbolo))
   (assert (entrada $?otros))
-  (assert (estados_finales $?otros_finales $?estado_final))
   (printout t ?estado_actual " " ?simbolo_actual " " ?siguiente_estado crlf)
 )
 
+(defrule final_state
+  ?estado <-(estado ?estado_actual)
+  ?final <- (final  ?estado_actual)
+  ?otros_finales_ <- (estados_finales $?otros_finales)
+  =>
+  (retract ?otros_finales_)
+  (assert (estados_finales $?otros_finales $?estado_actual))
+)
+
+(defrule recorrer_estados
+  ?estado_actual <-(estado )
+  ?estados <-(estados ?siguiente_estado $?otros_estados)
+ =>
+  (retract ?estado_actual)
+  (retract ?estados)
+  (assert (estado ?siguiente_estado))
+  (assert (estados $?otros_estados)
+)
 
 
 ; asserts de prueba
