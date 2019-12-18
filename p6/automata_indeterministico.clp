@@ -16,6 +16,7 @@
   (printout t "q0 q1" $?otros_estados crlf)
 )
 
+
 (defrule transicion_q0_1
   ?estado_actual <-(estado q0)
   ?estados <-(estados $?otros_estados)
@@ -29,10 +30,11 @@
   (assert (estado))
   (assert (caracter ?siguiente))
   (assert (estados q0 $?otros_estados))
-  (assert (entrada $?otros))
+  (assert (entrada $?otros "1"))
   (printout t "q01" crlf)
   (printout t "q0 " $?otros_estados crlf)
 )
+
 
 (defrule transicion_q1_0
   ?estado_actual <-(estado q1)
@@ -50,6 +52,26 @@
   (assert (entrada $?otros))
   (printout t "q10" crlf)
   (printout t "q2 " $?otros_estados crlf)
+)
+
+(defrule transicion_q1_1
+  ?estado_actual <-(estado q1)
+  ?estados <-(estados $?otros_estados)
+  ?simbolo_actual <-(caracter "1")
+  ?cinta <-(entrada  ?siguiente $?otros)
+ =>
+  (retract ?simbolo_actual)
+  (retract ?estados)
+  (retract ?cinta)
+  (retract ?estado_actual)
+  
+  (assert (estado))
+  (assert (caracter ?siguiente))
+  (assert (estados qfallido $?otros_estados))
+  (assert (entrada $?otros))
+  (assert (fallido "1"))
+  (printout t "q11" crlf)
+  (printout t "q1 " $?otros_estados crlf)
 )
 
 (defrule transicion_q2_0_only
@@ -90,38 +112,30 @@
 
 (defrule transicion_q2_0
   ?estado_actual <-(estado q2)
-  ?estados <-(estados $?otros_estados)
   ?simbolo_actual <-(caracter "0")
   ?cinta <-(entrada  ?siguiente $?otros)
  =>
   (retract ?simbolo_actual)
-  (retract ?estados)
   (retract ?cinta)
   (retract ?estado_actual)
-  (assert (estado))
+  (assert (estado qfallido))
   (assert (caracter ?siguiente))
-  (assert (estados q2 $?otros_estados))
-  (assert (entrada $?otros "0"))
+  (assert (entrada $?otros "0")) ;por comprobar que este cero vaya ahi
   (printout t "q20" crlf)
-  (printout t "q2 " $?otros_estados crlf)
 )
 
 (defrule transicion_q2_1
   ?estado_actual <-(estado q2)
-  ?estados <-(estados $?otros_estados)
   ?simbolo_actual <-(caracter "1")
   ?cinta <-(entrada  ?siguiente $?otros)
  =>
   (retract ?simbolo_actual)
-  (retract ?estados)
   (retract ?cinta)
   (retract ?estado_actual)
-  (assert (estado))
+  (assert (estado qfallido))
   (assert (caracter ?siguiente))
-  (assert (estados q2 $?otros_estados))
-  (assert (entrada $?otros ))
+  (assert (entrada $?otros "1")) ;por comprobar que este uno vaya ahi
   (printout t "q21" crlf)
-  (printout t "q2 " $?otros_estados crlf)
 )
 
 
@@ -215,6 +229,33 @@
 	(printout t "final states" $?final_states crlf)
 )
 
+
+(defrule q_fallido_0
+  ?estado_actual <-(estado qfallido)
+  ?simbolo_actual <-(caracter "0")
+  ?estados <-(estados ?siguiente_estado $?otros_estados)
+  ?cinta <-(entrada ?siguiente_simbolo $?otros)
+ =>
+  (retract ?estado_actual)
+  (retract ?estados)
+  (retract ?simbolo_actual)
+  (retract ?cinta)
+  (assert (estado ?siguiente_estado))
+  (assert (estados $?otros_estados))
+  (assert (caracter ?siguiente_simbolo))
+  (assert (entrada $?otros))
+)
+
+(defrule q_fallido_1
+  ?estado_actual <-(estado qfallido)
+  ?simbolo_actual <-(caracter "1")
+  ?cinta <-(entrada ?siguiente_simbolo $?otros)
+ =>
+  (retract ?simbolo_actual)
+  (retract ?cinta)
+  (assert (caracter ?siguiente_simbolo))
+  (assert (entrada $?otros))
+)
 
 
 ; asserts de prueba
