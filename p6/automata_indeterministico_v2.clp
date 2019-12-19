@@ -12,19 +12,18 @@
   ?estado <-(estado ?estado_actual)
   ?simbolo <-(caracter ?simbolo_actual)
   ?cinta <-(entrada ?siguiente_simbolo $?otros)
-  ?trans <-(trans ?estado_actual ?simbolo_actual ?siguiente_estado $?otros_estados)
-  ?estados <-(estados $?estados_otros)
+  ?trans <-(trans ?estado_actual ?simbolo_actual $?siguientes_estados)
+  ?estados <-(estados $?otros_estados)
  =>
   (retract ?simbolo)
   (retract ?cinta)
   (retract ?estado)
-  (retract ?trans)
   (retract ?estados)
-  (assert (estado ?siguiente_estado))
-  (assert (estados $?otros_estados $?estados_otros))
+  (assert (estado))
+  (assert (estados $?siguientes_estados $?otros_estados))
   (assert (caracter ?siguiente_simbolo))
-  (assert (entrada $?otros))
-  (printout t ?estado_actual " " ?simbolo_actual " " ?siguiente_estado crlf)
+  (assert (entrada $?otros ?simbolo_actual))
+  (printout t ?estado_actual " " ?simbolo_actual " " $?siguientes_estados crlf)
 )
 
 (defrule recorrer_estados
@@ -37,21 +36,54 @@
   (assert (estados $?otros_estados))
 )
 
+(defrule estado_fallido
+  ?estado_actual <-(estado qfallido)
+ =>
+  (retract ?estado_actual)
+  (assert (estado))
+)
+
 (defrule final_state
   ?estado <-(estado ?estado_actual)
   ?final <- (final  ?estado_actual)
-  ?otros_finales_ <- (estados_finales $?otros_finales)
+  ?simbolo <-(caracter "$")
+  ?finales <- (estados_finales $?otros_finales)
+  ?cinta <-(entrada ?siguiente_simbolo $?otros_simbolos)
   =>
-  (retract ?otros_finales_)
+  (retract ?finales)
   (retract ?estado)
+  (retract ?cinta)
+  (retract ?simbolo)
+  (assert (estado))
+  (assert (caracter ?siguiente_simbolo))
+  (assert (entrada $?otros_simbolos "$"))
   (assert (estados_finales $?otros_finales ?estado_actual))
   (printout t "fallo aqui" crlf)
 )
 
-(defrule fin_carrete
+(defrule final_state_1
+  ?estado <-(estado q1)
   ?simbolo <-(caracter "$")
+  ?finales <- (estados_finales $?otros_finales)
+  ?cinta <-(entrada ?siguiente_simbolo $?otros_simbolos)
+  =>
+  (retract ?finales)
+  (retract ?estado)
+  (retract ?cinta)
+  (retract ?simbolo)
+  (assert (estado))
+  (assert (caracter ?siguiente_simbolo))
+  (assert (entrada $?otros_simbolos "$"))
+  (assert (estados_finales $?otros_finales q2))
+  (printout t "fallo aqui" crlf)
+)
+
+(defrule fin_carrete
+  ?estados <-(estados)
+  ?finales <-(estados_finales $?estados_finales)
   =>
   (printout t "fin de carrete" crlf)
+  (printout t "Acepta en: " $?estados_finales crlf)
 )
 
 (deffacts prueba
@@ -59,5 +91,5 @@
   (estados_finales)
   (estados)
   (caracter "0")
-  (entrada "0" "1" "0" "0" "1" "$")
+  (entrada "0" "1" "0" "1" "$")
 )
