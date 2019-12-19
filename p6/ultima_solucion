@@ -1,0 +1,28 @@
+Para el último problema deberemos de sacar una palabra para un grafo que nos den, 
+de forma que esta palabra sea aceptada por el automata.
+
+Para ello recibiremos el esquema de un automata de la siguiente forma:
+
+(trans estado_inicial caracter_leido siguiente_estado)
+(assert (trans q0 1 q1))
+(assert (trans q0 0 q0))
+(assert (trans q1 1 q2))
+(assert (trans q1 0 q0))
+(assert (trans q2 0 q0))
+(assert (trans q2 1 q0))
+(assert (final q2))
+
+para ello empezaremos por el estado final e iremos haciendo backtracking hasta encontrar el estado inicial.
+
+Lo primero es comprobar que estado tienen como siguiente_estado el estado_final
+    Omitir los casos en el que el siguiente_estado = estado_inicial a no ser que estado_final = estado_inicial 
+    Guardar cada uno de esos estados, para recorrerlos posteriormente.
+    siguiente_estado pasa a ser cada uno de estos estados.
+
+Si se encuentra el estado_inicial:
+    Deberemos ir recorriendo los nodos visitados, esta vez hacia el estado final.
+    deberemos ir guardando caracter_leido en cada avance.
+
+si no se encuentra estado_inicial:
+    Deberemos devolver error tras recorrer todos los estados desde los que se puede llegar en el estado final
+
