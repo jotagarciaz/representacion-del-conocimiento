@@ -26,3 +26,20 @@ Si se encuentra el estado_inicial:
 si no se encuentra estado_inicial:
     Deberemos devolver error tras recorrer todos los estados desde los que se puede llegar en el estado final
 
+
+
+========================================== SOLUCIÓN DE DOMINGO ==================================================
+
+La idea del tercer ejercicio es empezar por el final (cualquiera de los estados finales).
+Se busca si tiene una transición a otro nodo distinto de sí mismo y se accede a ese nodo, 
+añadiendo el anterior a una lista de nodos visitados.
+Luego se busca un nodo que tenga una transición desde el nuevo nodo actual y que llegue a un nodo no visitado.
+Para decir nodo no en lista de visitados, se hace de la forma siguiente:
+
+(defrule prueba
+	?estado_actual <-(estado ?estado_actual)
+	(not (visitados $?otros ?estado_actual $?otros_2))
+	=>
+	(printout t "En teoría esto funciona" crlf)
+)
+
