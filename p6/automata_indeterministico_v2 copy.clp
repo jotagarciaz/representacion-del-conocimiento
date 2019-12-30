@@ -5,6 +5,7 @@
 (trans q1 "1" qfallido)
 (trans q2 "0" qfallido)
 (trans q2 "1" qfallido)
+(trans qfallido "1" qfallido)
 (final q2)
 (final q0))
 
@@ -38,6 +39,7 @@
 
 (defrule estado_fallido
   ?estado_actual <-(estado qfallido)
+  ?simbolo <-(caracter "0")
  =>
   (retract ?estado_actual)
   (assert (estado))
@@ -58,24 +60,25 @@
   (assert (caracter ?siguiente_simbolo))
   (assert (entrada $?otros_simbolos "$"))
   (assert (estados_finales $?otros_finales ?estado_actual))
-  (printout t "fallo aqui" crlf)
+  (printout t "Acepta " ?estado_actual crlf)
 )
 
-(defrule final_state_1
-  ?estado <-(estado q1)
+(defrule not_final_state
+  ?estado <-(estado qfallido)
   ?simbolo <-(caracter "$")
+  ?estados <-(estados $?otros_estados)
   ?finales <- (estados_finales $?otros_finales)
-  ?cinta <-(entrada ?siguiente_simbolo $?otros_simbolos)
+  ?cinta <-(entrada ?siguiente_simbolo ?siguiente_dos $?otros_simbolos)
   =>
   (retract ?finales)
   (retract ?estado)
   (retract ?cinta)
   (retract ?simbolo)
   (assert (estado))
-  (assert (caracter ?siguiente_simbolo))
+  (assert (caracter ?siguiente_dos))
   (assert (entrada $?otros_simbolos "$"))
-  (assert (estados_finales $?otros_finales q2))
-  (printout t "fallo aqui" crlf)
+  (assert (estados_finales $?otros_finales))
+  (printout t "fallo aqui estados " $?otros_estados crlf)
 )
 
 (defrule fin_carrete
@@ -91,5 +94,5 @@
   (estados_finales)
   (estados)
   (caracter "0")
-  (entrada "0" "1" "0" "1" "$")
+  (entrada "0" "1" "1" "0" "$")
 )
