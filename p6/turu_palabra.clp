@@ -1,9 +1,10 @@
 (deffacts automata
-;(trans q0 "0" q3)
-;(trans q0 "1" q1)
-(trans q1 "1" q2)
-(trans q2 "0" q2)
-(trans q3 "0" q1)
+(trans q0 1 q1)
+(trans q0 0 q0)
+(trans q1 1 q2)
+(trans q1 0 q0)
+(trans q2 0 q0)
+(trans q2 1 q0)
 (inicial q0))
 
 (defrule transicion
