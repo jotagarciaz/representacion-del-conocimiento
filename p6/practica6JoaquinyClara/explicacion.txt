@@ -1,0 +1,13 @@
+El archivo extra (automata_indeterministico_varias_reglas.clp)
+es el ejercicio del autómata indeterminístico antes de convertirlo en una sola regla.
+Tiene la estructura del primer apartado, pero cumple las funciones del segundo.
+
+El archivo grafo_creado_para_ultimo_ejercicio.png es una representación gráfica
+del grafo que hemos utilizado para comprobar el problema de vacuidad. 
+En el grafo se puede apreciar que, si se quita el enlace entre Q0 y Q1, 
+se pierde la posibilidad de formar una palabra, siendo Q0 el estado inicial, 
+y Q8 el final. Este es el caso que está reflejado en problema_vacuidad.clp. 
+
+Para comprobar un caso con palabra, se puede descomentar la línea indicada 
+(marcada también en el propio código como tal), 
+de forma que quedaría el grafo representado. 

@@ -1,6 +1,6 @@
 (deffacts automata
 (trans q0 0 q2)
-(trans q0 1 q1)
+;(trans q0 1 q1) ;descomentar para que funcione
 (trans q1 0 q6)
 (trans q2 0 q3)
 (trans q2 1 q4)
@@ -8,8 +8,7 @@
 (trans q3 1 q4)
 (trans q6 1 q7)
 (trans q7 0 q8)
-(trans q9 0 q4)
-(inicial q9))
+(inicial q0))
 
 (defrule transicion
 	?estado <- (estado ?estado_actual palabra $?caracteres)
