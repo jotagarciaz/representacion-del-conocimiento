@@ -1,11 +1,15 @@
 (deffacts automata
+(trans q0 0 q2)
 (trans q0 1 q1)
-(trans q0 0 q0)
-(trans q1 1 q2)
-(trans q1 0 q0)
-(trans q2 0 q0)
-(trans q2 1 q0)
-(inicial q0))
+(trans q1 0 q6)
+(trans q2 0 q3)
+(trans q2 1 q4)
+(trans q3 0 q5)
+(trans q3 1 q4)
+(trans q6 1 q7)
+(trans q7 0 q8)
+(trans q9 0 q4)
+(inicial q9))
 
 (defrule transicion
 	?estado <- (estado ?estado_actual palabra $?caracteres)
@@ -23,8 +27,9 @@
 (defrule sin_palabra
 	?estado <- (estado ?estado_actual palabra $?caracteres)
 	(not(trans ?estado_siguiente ?nuevo_caracter ?estado_actual))
+	(not(inicial ?estado_actual))
 	=>
-	(retract ?estado)
+	;(retract ?estado)
 	(printout t "No hay palabra" crlf)
 )
 
@@ -37,6 +42,6 @@
 )
 
 (deffacts prueba
-  (estado q2 palabra "$")
-  (visitados q2)
+  (estado q8 palabra "$")
+  (visitados)
 )
