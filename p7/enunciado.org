@@ -66,15 +66,22 @@ suficientes unidades de tiempo. ¿A qué tienden las probabilidades?
 #+BEGIN_SRC python :session prueba
 import numpy as np
 
-M = np.array([[0,0.5,0.5],
-              [0.5,0,0.5],
-              [1,0,0]
-])
+#Tiempo
+t = 1000
+
+M = np.array([[0.0,0.5,0.5],
+              [0.5,0.0,0.5],
+              [1.0,0.0,0.0]])
 
 v = np.array([0.1,0.2,0.7])
-print np.matmul(v,M)
+
+for i in range(t):
+	v= np.matmul(v,M)
+print(v)
 #+END_SRC
 
+#+RESULTS:
+: [0.44444444 0.22222222 0.33333333]
 
 Estas probabilidades miden la importancia de las páginas web y permiten
 establecer su importancia.
@@ -82,6 +89,11 @@ establecer su importancia.
 ¿Qué pasa si se cambia la distribución inicial de los usuarios? 
 Haced una prueba con una distribución diferente y comprobad si se tienden a 
 distribuir igual después de varias iteraciones.
+
+Ocurre lo mismo al cabo de las suficientes iteraciones. Con 1000 unidades de tiempo, 
+un numero muy alto, la distribucion es la misma. Hemos probado con varias distribuciones,
+como [0,0.1,0.9] y [0.6,0.3,0.1]. 
+
 * Segunda pregunta
 
 En PageRank los enlaces de las páginas web tienen una distribución uniforme 
@@ -104,6 +116,19 @@ digraph g{
 #+CAPTION: 
 #+ATTR_LATEX: :width 0.50\linewidth
 [[file:ejemplo2.png]]
+
+La matriz de importancia de cada pagina es 1/numero de enlaces. La pagina A tiene dos enlaces.
+La pagina B tiene dos enlaces. La pagica C tiene un enlace. La pagina D no tiene enlaces.
+La matriz resultante es: 
+
+M = [[0.0,0.5,0.5,0.0],
+	 [0.5,0.0,0.5,0.0],
+	 [0.0,0.0,0.0,1.0],
+	 [0.0,0.0,0.0,1.0]]
+
+La importancia tras un tiempo **infinito** es la siguiente:
+[0.0, 0.0, 0.0, 1.0]
+
 * Tercera pregunta
 
 En los ejemplos anteriores, independientemente de la distribución inicial 
@@ -115,22 +140,24 @@ Poned ejemplos de:
 los usuarios den resultados distintos para la importancia de la página. 
 #+begin_src dot :file respuesta1.png :cmdline -Tpng :exports none :results silent
 digraph g{
-
-	
+	pagina_A -> {pagina_B,pagina_C};
+	pagina_B -> {pagina_D,pagina_E};
+	pagina_C -> {pagina_F,pagina_G};
+	pagina_D -> {pagina_E};
+	pagina_F -> {pagina_G};
 }
 #+end_src
 #+CAPTION: 
 #+ATTR_LATEX: :width 0.50\linewidth
 [[file:respuesta1.png]]
 
-
-
 - Otro ejemplo donde no exista limite cuando el tiempo tienda a infinito.
 
 #+begin_src dot :file respuesta2.png :cmdline -Tpng :exports none :results silent
 digraph g{
-
-	
+	pagina_A -> {pagina_B};
+	pagina_B -> {pagina_C};
+	pagina_C -> {pagina_A};
 }
 #+end_src
 #+CAPTION: 
@@ -141,8 +168,49 @@ Estos ejemplos tienen que estar escritos en lenguaje dot.
 * Cuarta pregunta
 
 Una forma de evitar estos problemas es definir una constante $d$ que representa
-una probabilidad ir a una página cualquiera. Es decir, con una probabilidad de $d$
+una probabilidad de ir a una página cualquiera. Es decir, con una probabilidad de $d$
 el usuario elige una página al azar. En este caso, se puede demostrar 
-que siempre se converge para cualquier de probabilidad inicial.
+que siempre se converge para cualquier probabilidad inicial.
 
 Se pide dar la importancia de las páginas dadas en el ejercicio 3.
+
+Para el primer grafo la matriz de importancias es la siguiente:
+M = [[0.0,0.5,0.5,0.0,0.0,0.0,0.0],
+	 [0.0,0.0,0.0,0.5,0.5,0.0,0.0],
+	 [0.0,0.0,0.0,0.0,0.0,0.5,0.5],
+	 [0.0,0.0,0.0,0.0,1.0,0.0,0.0],
+	 [0.0,0.0,0.0,0.0,1.0,0.0,0.0],
+	 [0.0,0.0,0.0,0.0,0.0,0.0,1.0],
+	 [0.0,0.0,0.0,0.0,0.0,0.0,1.0]]
+
+La importancia tras un tiempo **infinito** es la siguiente:
+[0.02857143 0.04 0.04 0.04457143 0.40114286 0.04457143 0.40114286] para un d=0.2
+
+No se puede obtener una conclusion clara devido a que hay una perdida de decimales
+al dividir 1/7, que son los nodos del grafo en cuestion.
+
+Para el segundo grafo la matriz de importancias es la siguiente:
+M = [[0.0,1.0,0.0,0.0],
+	 [0.0,0.0,1.0,0.0],
+	 [0.0,0.0,0.0,1.0],
+	 [1.0,0.0,0.0,0.0]]
+
+La importancia tras un tiempo **infinito** es la siguiente:
+[0.25 0.25 0.25 0.25] para un d = 0.2
+
+Para este ejercicio, hemos hecho una matriz llamada Md que contiene la probabilidad
+de que el usuario entre en las paginas directamente, que es 1/numero de paginas, 
+sin necesidad de enlaces, regida por la constante $d$. 
+
+Por ejemplo, para el segundo grafo, la matriz Md seria la siguiente:
+Md = [[0.25,0.25,0.25,0.25],
+	 [0.25,0.25,0.25,0.25],
+	 [0.25,0.25,0.25,0.25],
+	 [0.25,0.25,0.25,0.25]]
+
+El calculo que hemos hecho para encontrar las importancias es el siguiente:
+Mv = (1-d)*M + d*Md
+siendo d la constante, Md la matriz explicada, M la matriz proporcionada arriba 
+de las importancias iniciales, y Mv el resultado del calculo, que es lo que 
+multiplicamos por v en el bucle. En el archivo prueba.py hemos incluido un ejemplo
+con el segundo grafo para una mas comoda comprension del calculo.
